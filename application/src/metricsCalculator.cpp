@@ -2,6 +2,7 @@
 #include <cassert>
 
 #include "metricsCalculator.hpp"
+#include "customListener.hpp"
 
 using std::cout;
 using std::endl;
@@ -10,10 +11,14 @@ using namespace antlr4;
 
 namespace JWB {	namespace details {
 
-MetricsCalculator::MetricsCalculator(CommonTokenStream *programTokens):
+MetricsCalculator::	MetricsCalculator(CommonTokenStream *programTokens, tree::ParseTree* tree):
 	tokens(programTokens)
 {
-	assert(tokens);
+	assert(programTokens);
+	assert(tree);
+
+	CustomListener listener(this);
+	tree::ParseTreeWalker::DEFAULT.walk(&listener, tree);
 }
 
 void MetricsCalculator::bumpNumberSourceLinesOfCode()
@@ -143,5 +148,34 @@ double MetricsCalculator::getCommentPercentage() const
 	return (double)getNumberOfCommentLines() / getSourceLinesOfCode();
 }
 
+void MetricsCalculator::showCyclomaticComplexities() const
+{
+	cout << endl << "Cyclomatic complexities:" << endl;
+	for (auto const& c : classes)
+	{
+		cout << endl << "> " << c->getName() << endl;
+		auto const& methods = c->getMethods();
+
+		for (auto m : methods)
+		{
+			cout << m->getName() << " — " << m->getIndependentPaths() << endl;
+		}
+
+		cout << "Average cyclomatic complexity — " << c->getAverageCyclomaticComplexity() << endl;
+	}
+}
+
+size_t MetricsCalculator::getAverageCyclomaticComplexity() const
+{
+	int sumOfCyclomaticComplexities = 0;
+
+	for (auto const& c : classes)
+		sumOfCyclomaticComplexities += c->getAverageCyclomaticComplexity();
+
+	if (classes.empty())
+		return 0;
+
+	return	(double)sumOfCyclomaticComplexities / classes.size() + 0.5;
+}
 
 }}

@@ -21,13 +21,20 @@ class MethodDescription
 		MethodDescription(AccessModifier methodModifier, std::string methodName, std::string const &stringForHash);
 
 		std::string const& getName() const;
-		size_t getId() const;
 		AccessModifier const& getAccessModifier() const;
+		size_t getId() const;
+		size_t getIndependentPaths() const;
+
+		void bumpIndependentPaths();
+		void bumpIndependentPaths(size_t number);
 
 	private:
-		AccessModifier accessModifier;
+		AccessModifier const accessModifier;
 		std::string const name;
 		size_t id;
+
+		// It is a quantitative measure of the number of linearly independent paths through a method's source code
+		size_t independentPaths = 1;
 };
 
 }}

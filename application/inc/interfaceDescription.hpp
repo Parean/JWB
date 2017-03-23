@@ -22,15 +22,17 @@ class InterfaceDescription
 		virtual ~InterfaceDescription() = default;
 
 		InterfaceDescription(std::string interfaceName);
-		void addMethod(MethodDescription const *newMethod);
+		void addMethod(std::shared_ptr<const MethodDescription> const &methodPtr);
+		void addMethod(MethodDescription const *methodPtr);
 
 		size_t getNumberOfMethods() const;
 		size_t getNumberOfPrivateMethods() const;
 		std::string const& getName() const;
+		std::vector <std::shared_ptr <const MethodDescription> > const& getMethods() const;
 
 	protected:
 		std::string const name;
-		std::vector <std::shared_ptr <const JWB::details::MethodDescription> > methods;
+		std::vector <std::shared_ptr <const MethodDescription> > methods;
 };
 
 }}
