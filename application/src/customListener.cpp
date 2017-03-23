@@ -19,15 +19,25 @@ CustomListener::CustomListener(MetricsCalculator *calculator):
 void CustomListener::enterClassDeclaration(JavaParser::ClassDeclarationContext *ctx)
 {
 	shared_ptr <ClassDescription> classPtr(new ClassDescription(ctx->Identifier()->getText()));
-	metricsCalculator->addClass(classPtr);
 	classesForTraversal.push_back(classPtr);
+	metricsCalculator->addClass(classPtr);
+	metricsCalculator->bumpNumberSourceLinesOfCode();
 }
 
 void CustomListener::enterInterfaceDeclaration(JavaParser::InterfaceDeclarationContext *ctx)
 {
 	shared_ptr <InterfaceDescription> interfacePtr(new InterfaceDescription(ctx->Identifier()->getText()));
-	metricsCalculator->addInterface(interfacePtr);
 	interfacesForTraversal.push_back(interfacePtr);
+	metricsCalculator->addInterface(interfacePtr);
+	metricsCalculator->bumpNumberSourceLinesOfCode();
+}
+
+void CustomListener::enterEnumDeclaration(JavaParser::EnumDeclarationContext *ctx)
+{
+	shared_ptr <ClassDescription> classPtr(new ClassDescription(ctx->Identifier()->getText()));
+	classesForTraversal.push_back(classPtr);
+	metricsCalculator->addClass(classPtr);
+	metricsCalculator->bumpNumberSourceLinesOfCode();
 }
 
 void CustomListener::exitClassDeclaration(JavaParser::ClassDeclarationContext *ctx)
@@ -42,6 +52,12 @@ void CustomListener::exitInterfaceDeclaration(JavaParser::InterfaceDeclarationCo
 	interfacesForTraversal.pop_back();
 }
 
+void CustomListener::exitEnumDeclaration(JavaParser::EnumDeclarationContext *ctx)
+{
+	assert(!classesForTraversal.empty());
+	classesForTraversal.pop_back();
+}
+
 void CustomListener::enterClassBodyDeclaration(JavaParser::ClassBodyDeclarationContext *ctx)
 {
 	assert(!classesForTraversal.empty());
@@ -51,7 +67,14 @@ void CustomListener::enterClassBodyDeclaration(JavaParser::ClassBodyDeclarationC
 	if (!memberDeclaration)
 		return;
 
-	auto const modifier = getAccessModifier(ctx->modifier());
+	// These declarations are taken into account in another functions
+	if (!(memberDeclaration->classDeclaration() || memberDeclaration->interfaceDeclaration() ||
+		  memberDeclaration->annotationTypeDeclaration() || memberDeclaration->enumDeclaration()))
+		{
+			metricsCalculator->bumpNumberSourceLinesOfCode();
+		}
+
+	auto const modifier = getAccessModifier(ctx->modifier(), true);
 
 	if (memberDeclaration->methodDeclaration())
 	{
@@ -98,7 +121,15 @@ void CustomListener::enterInterfaceBodyDeclaration(JavaParser::InterfaceBodyDecl
 	if (!interfaceMemberDeclaration)
 		return;
 
-	auto const modifier = getAccessModifier(ctx->modifier());
+
+	// These declarations are taken into account in another functions
+	if (!(interfaceMemberDeclaration->interfaceDeclaration() || interfaceMemberDeclaration->interfaceDeclaration() ||
+		  interfaceMemberDeclaration->annotationTypeDeclaration() || interfaceMemberDeclaration->enumDeclaration()))
+	{
+		metricsCalculator->bumpNumberSourceLinesOfCode();
+	}
+
+	auto const modifier = getAccessModifier(ctx->modifier(), false);
 
 	if (interfaceMemberDeclaration->interfaceMethodDeclaration())
 	{
@@ -115,7 +146,43 @@ void CustomListener::enterInterfaceBodyDeclaration(JavaParser::InterfaceBodyDecl
 	}
 }
 
-AccessModifier CustomListener::getAccessModifier(vector<JavaParser::ModifierContext *> modifiers) const
+void CustomListener::enterStatement(JavaParser::StatementContext *ctx)
+{
+	// If ctx has block, we will take it into account later
+	if (ctx->block())
+		return;
+
+	metricsCalculator->bumpNumberSourceLinesOfCode();
+}
+
+void CustomListener::enterCompilationUnit(JavaParser::CompilationUnitContext *ctx)
+{
+	metricsCalculator->bumpNumberSourceLinesOfCode(ctx->importDeclaration().size());
+	if (ctx->packageDeclaration())
+		metricsCalculator->bumpNumberSourceLinesOfCode();
+}
+
+void CustomListener::enterLocalVariableDeclarationStatement(JavaParser::LocalVariableDeclarationStatementContext *ctx)
+{
+	metricsCalculator->bumpNumberSourceLinesOfCode();
+}
+
+void CustomListener::enterAnnotationName(JavaParser::AnnotationNameContext *ctx)
+{
+	metricsCalculator->bumpNumberSourceLinesOfCode();
+}
+
+void CustomListener::enterAnnotationMethodOrConstantRest(JavaParser::AnnotationMethodOrConstantRestContext *ctx)
+{
+	metricsCalculator->bumpNumberSourceLinesOfCode();
+}
+
+void CustomListener::enterAnnotationTypeDeclaration(JavaParser::AnnotationTypeDeclarationContext *ctx)
+{
+	metricsCalculator->bumpNumberSourceLinesOfCode();
+}
+
+AccessModifier CustomListener::getAccessModifier(vector<JavaParser::ModifierContext *> modifiers, bool isClass) const
 {
 	for (auto const& m : modifiers)
 	{
@@ -131,7 +198,10 @@ AccessModifier CustomListener::getAccessModifier(vector<JavaParser::ModifierCont
 			return AccessModifier::PROTECTED;
 	}
 
-	return AccessModifier::PROTECTED;
+	if (isClass)
+		return AccessModifier::DEFAULT;
+	else
+		return AccessModifier::PUBLIC;
 }
 
 }}

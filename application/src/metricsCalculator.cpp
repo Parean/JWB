@@ -6,8 +6,25 @@
 using std::cout;
 using std::endl;
 using std::shared_ptr;
+using namespace antlr4;
 
 namespace JWB {	namespace details {
+
+MetricsCalculator::MetricsCalculator(CommonTokenStream *programTokens):
+	tokens(programTokens)
+{
+	assert(tokens);
+}
+
+void MetricsCalculator::bumpNumberSourceLinesOfCode()
+{
+	numberSourceLinesOfCode++;
+}
+
+void MetricsCalculator::bumpNumberSourceLinesOfCode(size_t number)
+{
+	numberSourceLinesOfCode += number;
+}
 
 void MetricsCalculator::addClass(shared_ptr <const ClassDescription> const &classPtr)
 {
@@ -19,6 +36,38 @@ void MetricsCalculator::addInterface(shared_ptr <const InterfaceDescription> con
 {
 	assert(interfacePtr.get());
 	interfaces.push_back(interfacePtr);
+}
+
+
+size_t MetricsCalculator::getNumberOfCommentLines() const
+{
+	size_t numberOfCommentLines = 0;
+
+	for(auto const& t : tokens->getTokens())
+	{
+		// If token is comment, it is located in hidden channel and getChannel() return 1
+		// If token doesn't located in hidden channel, getChannel() return 0 and we move on to the next iteration
+		if (!t->getChannel())
+			continue;
+
+		if (t->getText().substr(0,2) == "//")
+		{
+			numberOfCommentLines++;
+			continue;
+		}
+
+		// We count the number of lines in the comments, so in a multiline comment, we need to count the line feed characters
+		for(auto const& c : t->getText())
+		{
+			if (c == '\n')
+				numberOfCommentLines++;
+		}
+
+		// Last line hasn`t feed character
+		numberOfCommentLines++;
+	}
+
+	return numberOfCommentLines;
 }
 
 void MetricsCalculator::showNumberOfMethods() const
@@ -46,8 +95,8 @@ void MetricsCalculator::showNumberOfFields() const
 
 double MetricsCalculator::getMethodHidingFactor() const
 {
-	int numOfMethods = 0;
-	int numOfPrivateMethods = 0;
+	size_t numOfMethods = 0;
+	size_t numOfPrivateMethods = 0;
 
 	for (auto const& c : classes)
 	{
@@ -69,8 +118,8 @@ double MetricsCalculator::getMethodHidingFactor() const
 
 double MetricsCalculator::getAttributeHidingFactor() const
 {
-	int numOfAttributes = 0;
-	int numOfPrivateAttributes = 0;
+	size_t numOfAttributes = 0;
+	size_t numOfPrivateAttributes = 0;
 
 	for (auto const& c : classes)
 	{
@@ -83,5 +132,16 @@ double MetricsCalculator::getAttributeHidingFactor() const
 
 	return (double)numOfPrivateAttributes / numOfAttributes;
 }
+
+size_t MetricsCalculator::getSourceLinesOfCode() const
+{
+	return numberSourceLinesOfCode;
+}
+
+double MetricsCalculator::getCommentPercentage() const
+{
+	return (double)getNumberOfCommentLines() / getSourceLinesOfCode();
+}
+
 
 }}

@@ -12,7 +12,7 @@
 namespace JWB {	namespace details {
 
 /// @class CustomListener
-/// @brief This listener is used to сollect data for Method Hiding Factor and Attribute Hiding Factor metrics
+/// @brief This listener is used to calculate Method Hiding Factor, Attribute Hiding Factor, Comment Percentage and Source Lines of Code
 class CustomListener : public JavaBaseListener
 {
 	public:
@@ -25,22 +25,34 @@ class CustomListener : public JavaBaseListener
 		CustomListener(MetricsCalculator *calculator);
 
 	private:
-		// In this two methods we recognize class or interface and save it
+		// In these methods we recognize class or interface, save it and increment numberSourceLinesOfCode
 		// Also we add it to vector, so in program we always can get access to current class or interface
 		void enterClassDeclaration(JavaParser::ClassDeclarationContext *ctx) override;
 		void enterInterfaceDeclaration(JavaParser::InterfaceDeclarationContext *ctx) override;
+		void enterEnumDeclaration(JavaParser::EnumDeclarationContext *ctx) override;
 
-		// In this two methods we remove class or interface from vector to support the ability to access the current class or interface
+		// In these two methods we remove class or interface from vector to support the ability to access the current class or interface
 		void exitClassDeclaration(JavaParser::ClassDeclarationContext *ctx) override;
 		void exitInterfaceDeclaration(JavaParser::InterfaceDeclarationContext *ctx) override;
+		void exitEnumDeclaration(JavaParser::EnumDeclarationContext *ctx);
 
-		// In this two methods we recognize class or interface method or field and save it
+
+		// In these two methods we recognize class or interface method or field and save it
+		// Also we increment numberSourceLinesOfCode if context has memberDeclaration
 		void enterClassBodyDeclaration(JavaParser::ClassBodyDeclarationContext *ctx) override;
 		void enterInterfaceBodyDeclaration(JavaParser::InterfaceBodyDeclarationContext *ctx) override;
 
 		// If modifiers contain access modifier, it will be return
-		// Otherwise will be return PROTECTED
-		AccessModifier getAccessModifier(std::vector<JavaParser::ModifierContext *> modifiers) const;
+		// Otherwise, if isClass true – will be returned PROTECTED, if false – will be returned PUBLIC
+		AccessModifier getAccessModifier(std::vector<JavaParser::ModifierContext *> modifiers, bool isClass) const;
+
+		// These methods are used to increment numberSourceLinesOfCode
+		void enterLocalVariableDeclarationStatement(JavaParser::LocalVariableDeclarationStatementContext *ctx) override;
+		void enterStatement(JavaParser::StatementContext *ctx) override;
+		void enterAnnotationName(JavaParser::AnnotationNameContext *ctx) override;
+		void enterAnnotationTypeDeclaration(JavaParser::AnnotationTypeDeclarationContext *ctx) override;
+		void enterAnnotationMethodOrConstantRest(JavaParser::AnnotationMethodOrConstantRestContext *ctx) override;
+		void enterCompilationUnit(JavaParser::CompilationUnitContext *ctx) override;
 
 		// MetricsCalculator is passed to the listener and stores all the data it needs during the tree traversal,
 		// then it's used by the client code to calculate various metrics
