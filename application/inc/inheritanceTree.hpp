@@ -40,10 +40,28 @@ namespace semesterProject
 			}
 		}
 
-		template <class TemplateLambda, TemplateLambda lambda>
-		void lambdaDfs()
+		/// Takes lambda (from dfsFunctions) and applies them to roots
+		/// Takes lambdas that return void.
+		template <class... Args>
+		void lambdaDfs(std::function<void(Args...)> lambda) const
 		{
+			for (auto const* x : roots)
+			{
+				lambda(x);
+			}
+		}
 
+		/// Takes lambda (from dfsFunctions) and applies them to roots
+		/// Takes lambdas that does not return void.
+		template <class returnValue, class... Args>
+		std::vector<returnValue> lambdaDfs(std::function<returnValue(Args...)> lambda) const
+		{
+			std::vector<returnValue> returnVector;
+			for (auto const* x : roots)
+			{
+				returnVector.push_back(lambda(x));
+			}
+			return std::move(returnVector);
 		}
 
 	private:

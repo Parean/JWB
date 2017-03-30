@@ -41,5 +41,7 @@ namespace semesterProject
 
 		std::vector<Node*> inheritors;
 		std::vector<Node*> parents;
+
+		friend class dfsFunctions;
 	};
 }
