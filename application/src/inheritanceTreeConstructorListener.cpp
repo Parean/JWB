@@ -17,7 +17,10 @@ void semesterProject::inheritanceTreeConstructorListener::enterInterfaceDeclarat
 	// Interface should contain a name. Otherwise it's a bag.
 	assert(ctx->Identifier());
 	assert(!ctx->Identifier()->getText().empty());
+
+	// inheritorName should not be empty. Assert is InterfaceDescription(string).
 	const string inheritorName(ctx->Identifier()->getText());
+
 	vector<string> parentNames;
 
 	// Node is scaned for parent-interfaces and then a new mask for a future node is added to the future tree.
@@ -30,12 +33,14 @@ void semesterProject::inheritanceTreeConstructorListener::enterInterfaceDeclarat
 			parentNames.push_back(x->classOrInterfaceType()->Identifier(0)->getText());
 		}
 	}
-	currentlyBuildingTree.addNodeAndConnections(move(inheritorName), move(parentNames));
+	currentlyBuildingTree.addNodeAndConnections(new InterfaceDescription(inheritorName), move(parentNames));
 }
 
 void semesterProject::inheritanceTreeConstructorListener::enterClassDeclaration(JavaParser::ClassDeclarationContext *ctx)
 {
+	// inheritorName should not be empty. Assert is ClassDescription::InterfaceDescription(string).
 	const string inheritorName(ctx->Identifier()->getText());
+
 	vector<string> parentNames;
 	// Node is scaned for parent-class and then a new mask for a future node is added to the future tree.
 	if (ctx->typeType())
@@ -54,5 +59,5 @@ void semesterProject::inheritanceTreeConstructorListener::enterClassDeclaration(
 			parentNames.emplace_back(x->classOrInterfaceType()->Identifier(0)->getText());
 		}
 	}
-	currentlyBuildingTree.addNodeAndConnections(move(inheritorName), move(parentNames));
+	currentlyBuildingTree.addNodeAndConnections(new ClassDescription(inheritorName), move(parentNames));
 }

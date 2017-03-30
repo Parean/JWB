@@ -30,6 +30,10 @@ class InterfaceDescription
 		std::string const& getName() const;
 		std::vector <std::shared_ptr <const MethodDescription> > const& getMethods() const;
 
+		/// Take visitor and then transfer it "this". 
+		/// Allows visitor get needed notes about current Java interface.
+		virtual void takeVisitor(Visitor* visitor) const;
+
 	protected:
 		std::string const name;
 		std::vector <std::shared_ptr <const MethodDescription> > methods;

@@ -27,6 +27,10 @@ class ClassDescription : public InterfaceDescription
 		size_t getNumberOfPrivateAttributes() const;
 		size_t getAverageCyclomaticComplexity() const;
 
+		/// Take visitor and then transfer it "this". 
+		/// Allows visitor get needed notes about current Java class.
+		void takeVisitor(Visitor* visitor) const override;
+
 	private:
 		std::vector<std::string> attributes;
 		std::vector<std::string const*> privateAttributes;

@@ -18,7 +18,7 @@ namespace semesterProject
 		Node& operator=(Node&& node) = delete;
 
 		/// Takes string as a parameter and constuct shared_ptr of a Interface of this name.
-		Node(std::string className);
+		Node(InterfaceDescription* interface);
 
 		/// Add inheritor to the contained interface.
 		void addInheritor(Node* newInheritor);
@@ -31,6 +31,10 @@ namespace semesterProject
 
 		/// Returns pointer to interface.
 		InterfaceDescription const* getInterface() const;
+
+		/// Takes visitor, gives it contained Java interface (class).
+		/// After that dfs into inheritors.
+		void takeVisitor(Visitor* visitor) const;
 
 	private:
 		std::shared_ptr<InterfaceDescription> interfaceDescription;

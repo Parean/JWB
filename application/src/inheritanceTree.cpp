@@ -1,12 +1,10 @@
 #include "inheritanceTree.hpp"
-#include <string>
-#include <unordered_map>
 
 using std::vector;
 using std::move;
 using std::shared_ptr;
 using semesterProject::Node;
-using std::unordered_map;
+using std::unordered_set;
 using std::string;
 
 semesterProject::InheritanceTree::InheritanceTree(vector<Node*> roots, vector<shared_ptr<Node>> nodes) :
@@ -17,9 +15,4 @@ semesterProject::InheritanceTree::InheritanceTree(vector<Node*> roots, vector<sh
 vector<Node*> const& semesterProject::InheritanceTree::getRoots() const
 {
 	return roots;
-}
-
-void semesterProject::InheritanceTree::dfs()
-{
-
 }

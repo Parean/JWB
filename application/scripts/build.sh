@@ -1,6 +1,6 @@
 #!/bin/bash
-rm -rf ./CMakeFiles
-rm -rf ./temp
+rm -rf ../src/CMakeFiles
+rm -rf ../src/temp
 cmake ..
 mkdir temp
 cp ./CMakeFiles/JWB.dir/depend.make ./temp/depend.make

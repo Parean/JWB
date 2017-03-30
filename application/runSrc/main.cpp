@@ -17,4 +17,5 @@ int main(int argc, const char* argv[])
   JavaParser parser(&tokens);
   tree::ParseTree *tree = parser.compilationUnit();
   semesterProject::treeMetrics(tree);
+  std::cout << "!" << std::endl;
 }
