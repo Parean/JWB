@@ -25,6 +25,7 @@ class ClassDescription : public InterfaceDescription
 
 		size_t getNumberOfAttributes() const;
 		size_t getNumberOfPrivateAttributes() const;
+		size_t getAverageCyclomaticComplexity() const;
 
 	private:
 		std::vector<std::string> attributes;

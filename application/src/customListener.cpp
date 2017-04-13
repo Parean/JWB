@@ -3,9 +3,8 @@
 #include "accessModifier.hpp"
 #include "customListener.hpp"
 
-using std::cout;
-using std::endl;
 using std::vector;
+using std::string;
 using std::shared_ptr;
 
 namespace JWB {	namespace details {
@@ -18,44 +17,91 @@ CustomListener::CustomListener(MetricsCalculator *calculator):
 
 void CustomListener::enterClassDeclaration(JavaParser::ClassDeclarationContext *ctx)
 {
-	shared_ptr <ClassDescription> classPtr(new ClassDescription(ctx->Identifier()->getText()));
-	classesForTraversal.push_back(classPtr);
-	metricsCalculator->addClass(classPtr);
+	classesForTraversal.emplace_back(new ClassDescription(ctx->Identifier()->getText()));
 	metricsCalculator->bumpNumberSourceLinesOfCode();
 }
 
 void CustomListener::enterInterfaceDeclaration(JavaParser::InterfaceDeclarationContext *ctx)
 {
-	shared_ptr <InterfaceDescription> interfacePtr(new InterfaceDescription(ctx->Identifier()->getText()));
-	interfacesForTraversal.push_back(interfacePtr);
-	metricsCalculator->addInterface(interfacePtr);
+	interfacesForTraversal.emplace_back(new InterfaceDescription(ctx->Identifier()->getText()));
 	metricsCalculator->bumpNumberSourceLinesOfCode();
 }
 
 void CustomListener::enterEnumDeclaration(JavaParser::EnumDeclarationContext *ctx)
 {
-	shared_ptr <ClassDescription> classPtr(new ClassDescription(ctx->Identifier()->getText()));
-	classesForTraversal.push_back(classPtr);
-	metricsCalculator->addClass(classPtr);
+	classesForTraversal.emplace_back(new ClassDescription(ctx->Identifier()->getText()));
 	metricsCalculator->bumpNumberSourceLinesOfCode();
 }
 
 void CustomListener::exitClassDeclaration(JavaParser::ClassDeclarationContext *ctx)
 {
 	assert(!classesForTraversal.empty());
+	metricsCalculator->addClass(classesForTraversal.back());
 	classesForTraversal.pop_back();
 }
 
 void CustomListener::exitInterfaceDeclaration(JavaParser::InterfaceDeclarationContext *ctx)
 {
 	assert(!interfacesForTraversal.empty());
+	metricsCalculator->addInterface(interfacesForTraversal.back());
 	interfacesForTraversal.pop_back();
 }
 
 void CustomListener::exitEnumDeclaration(JavaParser::EnumDeclarationContext *ctx)
 {
 	assert(!classesForTraversal.empty());
+	metricsCalculator->addClass(classesForTraversal.back());
 	classesForTraversal.pop_back();
+}
+
+void CustomListener::enterStatement(JavaParser::StatementContext *ctx)
+{
+	assert(!methodsForTraversal.empty());
+
+	if (!ctx->getTokens(JavaParser::IF).empty() || !ctx->getTokens(JavaParser::FOR).empty() || !ctx->getTokens(JavaParser::WHILE).empty() ||
+		!ctx->getTokens(JavaParser::DO).empty() || !ctx->getTokens(JavaParser::CATCH).empty())
+	{
+		methodsForTraversal.back()->bumpIndependentPaths();
+	}
+
+	if (!ctx->catchClause().empty())
+	{
+		methodsForTraversal.back()->bumpIndependentPaths(ctx->catchClause().size());
+	}
+
+	if (!ctx->getTokens(JavaParser::SWITCH).empty())
+	{
+		methodsForTraversal.back()->bumpIndependentPaths(ctx->switchBlockStatementGroup().size());
+	}
+
+	// If ctx has block, we will take it into account later
+	if (ctx->block())
+		return;
+
+	metricsCalculator->bumpNumberSourceLinesOfCode();
+}
+
+void CustomListener::enterExpression(JavaParser::ExpressionContext *ctx)
+{
+	if (!ctx->getTokens(JavaParser::QUESTION).empty())
+	{
+		assert(!methodsForTraversal.empty());
+		methodsForTraversal.back()->bumpIndependentPaths();
+	}
+}
+
+void CustomListener::exitMethodDeclaration(JavaParser::MethodDeclarationContext *ctx)
+{
+	assert(!methodsForTraversal.empty());
+	classesForTraversal.back()->addMethod(methodsForTraversal.back());
+	methodsForTraversal.pop_back();
+}
+
+void CustomListener::exitConstructorDeclaration(JavaParser::ConstructorDeclarationContext *ctx)
+{
+	assert(!methodsForTraversal.empty());
+	classesForTraversal.back()->addMethod(methodsForTraversal.back());
+	methodsForTraversal.pop_back();
 }
 
 void CustomListener::enterClassBodyDeclaration(JavaParser::ClassBodyDeclarationContext *ctx)
@@ -75,40 +121,43 @@ void CustomListener::enterClassBodyDeclaration(JavaParser::ClassBodyDeclarationC
 		}
 
 	auto const modifier = getAccessModifier(ctx->modifier(), true);
+	string name = "";
+	string parameters = "";
 
 	if (memberDeclaration->methodDeclaration())
 	{
-		auto const name = memberDeclaration->methodDeclaration()->Identifier()->getText();;
-		classesForTraversal.back()->addMethod(new MethodDescription (modifier, name,
-			name + memberDeclaration->methodDeclaration()->formalParameters()->getText()));
+		name = memberDeclaration->methodDeclaration()->Identifier()->getText();;
+		parameters = memberDeclaration->methodDeclaration()->formalParameters()->getText();
 	}
 
 	if (memberDeclaration->constructorDeclaration())
 	{
-		auto const name = memberDeclaration->constructorDeclaration()->Identifier()->getText();
-		classesForTraversal.back()->addMethod(new MethodDescription (modifier, name,
-			name + memberDeclaration->constructorDeclaration()->formalParameters()->getText()));
+		name = memberDeclaration->constructorDeclaration()->Identifier()->getText();
+		parameters = memberDeclaration->constructorDeclaration()->formalParameters()->getText();
 	}
 
 	if (memberDeclaration->genericMethodDeclaration())
 	{
-		auto const name = memberDeclaration->genericMethodDeclaration()->methodDeclaration()->Identifier()->getText();
-		classesForTraversal.back()->addMethod(new MethodDescription (modifier, name,
-			name + memberDeclaration->genericMethodDeclaration()->methodDeclaration()->formalParameters()->getText()));
+		name = memberDeclaration->genericMethodDeclaration()->methodDeclaration()->Identifier()->getText();
+		parameters = memberDeclaration->genericMethodDeclaration()->methodDeclaration()->formalParameters()->getText();
 	}
 
 	if (memberDeclaration->genericConstructorDeclaration())
 	{
-		auto const name = memberDeclaration->genericConstructorDeclaration()->constructorDeclaration()->Identifier()->getText();
-		classesForTraversal.back()->addMethod(new MethodDescription (modifier, name,
-			name + memberDeclaration->genericConstructorDeclaration()->constructorDeclaration()->formalParameters()->getText()));
+		name = memberDeclaration->genericConstructorDeclaration()->constructorDeclaration()->Identifier()->getText();
+		parameters = memberDeclaration->genericConstructorDeclaration()->constructorDeclaration()->formalParameters()->getText();
 	}
 
 	if (memberDeclaration->fieldDeclaration())
 	{
 		auto const variableDeclarators = memberDeclaration->fieldDeclaration()->variableDeclarators()->variableDeclarator();
-		for (auto const m : variableDeclarators)
-			classesForTraversal.back()->addAttribute(modifier, m->variableDeclaratorId()->Identifier()->getText());
+		for (auto const& v : variableDeclarators)
+			classesForTraversal.back()->addAttribute(modifier, v->variableDeclaratorId()->Identifier()->getText());
+	}
+
+	if (!name.empty())
+	{
+		methodsForTraversal.emplace_back(new MethodDescription(modifier, name, name + parameters));
 	}
 }
 
@@ -121,7 +170,6 @@ void CustomListener::enterInterfaceBodyDeclaration(JavaParser::InterfaceBodyDecl
 	if (!interfaceMemberDeclaration)
 		return;
 
-
 	// These declarations are taken into account in another functions
 	if (!(interfaceMemberDeclaration->interfaceDeclaration() || interfaceMemberDeclaration->interfaceDeclaration() ||
 		  interfaceMemberDeclaration->annotationTypeDeclaration() || interfaceMemberDeclaration->enumDeclaration()))
@@ -130,29 +178,26 @@ void CustomListener::enterInterfaceBodyDeclaration(JavaParser::InterfaceBodyDecl
 	}
 
 	auto const modifier = getAccessModifier(ctx->modifier(), false);
+	string name = "";
+	string parameters = "";
 
 	if (interfaceMemberDeclaration->interfaceMethodDeclaration())
 	{
-		auto const name = interfaceMemberDeclaration->interfaceMethodDeclaration()->Identifier()->getText();
-		interfacesForTraversal.back()->addMethod(new MethodDescription (modifier, name,
-			name + interfaceMemberDeclaration->interfaceMethodDeclaration()->formalParameters()->getText()));
+		name = interfaceMemberDeclaration->interfaceMethodDeclaration()->Identifier()->getText();
+		parameters = interfaceMemberDeclaration->interfaceMethodDeclaration()->formalParameters()->getText();
 	}
 
 	if (interfaceMemberDeclaration->genericInterfaceMethodDeclaration())
 	{
-		auto const name = interfaceMemberDeclaration->genericInterfaceMethodDeclaration()->interfaceMethodDeclaration()->Identifier()->getText();
-		interfacesForTraversal.back()->addMethod(new MethodDescription (modifier, name,
-			name + interfaceMemberDeclaration->genericInterfaceMethodDeclaration()->interfaceMethodDeclaration()->formalParameters()->getText()));
+		name = interfaceMemberDeclaration->genericInterfaceMethodDeclaration()->interfaceMethodDeclaration()->Identifier()->getText();
+		parameters = interfaceMemberDeclaration->genericInterfaceMethodDeclaration()->interfaceMethodDeclaration()->formalParameters()->getText();
 	}
-}
 
-void CustomListener::enterStatement(JavaParser::StatementContext *ctx)
-{
-	// If ctx has block, we will take it into account later
-	if (ctx->block())
-		return;
-
-	metricsCalculator->bumpNumberSourceLinesOfCode();
+	if (!name.empty())
+	{
+		std::shared_ptr<MethodDescription> methodPtr(new MethodDescription(modifier, name, name + parameters));
+		classesForTraversal.back()->addMethod(methodPtr);
+	}
 }
 
 void CustomListener::enterCompilationUnit(JavaParser::CompilationUnitContext *ctx)

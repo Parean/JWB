@@ -3,8 +3,8 @@
 #include "antlr4-runtime.h"
 #include "JavaLexer.h"
 #include "JavaParser.h"
-#include "customListener.hpp"
 #include "metricsCalculator.hpp"
+
 
 using std::cout;
 using std::ifstream;
@@ -20,16 +20,18 @@ int main(int argc, const char* argv[]) {
 	CommonTokenStream tokens(&lexer);
 	JavaParser parser(&tokens);
 	tree::ParseTree *tree = parser.compilationUnit();
-	JWB::details::MetricsCalculator metricsCalculator(&tokens);
-	JWB::details::CustomListener listener(&metricsCalculator);
-	tree::ParseTreeWalker::DEFAULT.walk(&listener, tree);
+	JWB::details::MetricsCalculator metricsCalculator(&tokens, tree);
 
 	metricsCalculator.showNumberOfMethods();
 	metricsCalculator.showNumberOfFields();
 
-	cout << metricsCalculator.getMethodHidingFactor() << endl;
-	cout << metricsCalculator.getAttributeHidingFactor() << endl;
-	cout << metricsCalculator.getNumberOfCommentLines() << endl;
-	cout << metricsCalculator.getSourceLinesOfCode() << endl;
-	cout << metricsCalculator.getCommentPercentage() << endl;
+	cout << "Method hiding factor: " << metricsCalculator.getMethodHidingFactor() << endl;
+	cout << "Attribute hiding factor: " << metricsCalculator.getAttributeHidingFactor() << endl << endl;
+
+	cout << "Number of comment lines: " << metricsCalculator.getNumberOfCommentLines() << endl;
+	cout << "Source lines of code: " << metricsCalculator.getSourceLinesOfCode() << endl;
+	cout << "Comment percentage: " << metricsCalculator.getCommentPercentage() << endl << endl;
+
+	metricsCalculator.showCyclomaticComplexities();
+	cout << endl << "Average cyclomatic complexity for all classes: " << metricsCalculator.getAverageCyclomaticComplexity() << endl;
 }

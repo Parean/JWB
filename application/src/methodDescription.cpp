@@ -34,4 +34,19 @@ size_t MethodDescription::getId() const
 	return id;
 }
 
+void MethodDescription::bumpIndependentPaths()
+{
+	independentPaths++;
+}
+
+void MethodDescription::bumpIndependentPaths(size_t number)
+{
+	independentPaths += number;
+}
+
+size_t MethodDescription::getIndependentPaths() const
+{
+	return independentPaths;
+}
+
 }}

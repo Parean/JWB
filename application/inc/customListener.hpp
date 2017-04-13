@@ -25,21 +25,35 @@ class CustomListener : public JavaBaseListener
 		CustomListener(MetricsCalculator *calculator);
 
 	private:
-		// In these methods we recognize class or interface, save it and increment numberSourceLinesOfCode
-		// Also we add it to vector, so in program we always can get access to current class or interface
+		// In these methods we add class or interface to vector, so in program we always can get access to current class or interface
+		// Also we increment numberSourceLinesOfCode
 		void enterClassDeclaration(JavaParser::ClassDeclarationContext *ctx) override;
 		void enterInterfaceDeclaration(JavaParser::InterfaceDeclarationContext *ctx) override;
 		void enterEnumDeclaration(JavaParser::EnumDeclarationContext *ctx) override;
 
-		// In these two methods we remove class or interface from vector to support the ability to access the current class or interface
+		// In these methods we add class or interface to the metricsCalculator
+		// Then, we remove it from vector to support the ability to access the current class or interface
 		void exitClassDeclaration(JavaParser::ClassDeclarationContext *ctx) override;
 		void exitInterfaceDeclaration(JavaParser::InterfaceDeclarationContext *ctx) override;
 		void exitEnumDeclaration(JavaParser::EnumDeclarationContext *ctx);
 
+		// In this two methods we increase independetPaths in current method if it's necessary
+		// Also enterStatement is used to increment numberSourceLinesOfCode
+		void enterStatement(JavaParser::StatementContext *ctx) override;
+		void enterExpression(JavaParser::ExpressionContext *ctx) override;
 
-		// In these two methods we recognize class or interface method or field and save it
-		// Also we increment numberSourceLinesOfCode if context has memberDeclaration
+		// In this two methods we add method to the current class
+		// Then, we remove it from vector to support the ability to access the current method
+		void exitMethodDeclaration(JavaParser::MethodDeclarationContext *ctx) override;
+		void exitConstructorDeclaration(JavaParser::ConstructorDeclarationContext *ctx) override;
+
+		// In this method we recognize attributes and save them in the current class
+		// Also we recognize method and add it to vector, so in program we always can get access to current method
 		void enterClassBodyDeclaration(JavaParser::ClassBodyDeclarationContext *ctx) override;
+
+		// In this method we recognize method and save it in the current class
+		// We don't add it to vector, because  there is no need: in interface's method there isn't implementation
+		// and it's cyclomatic complexity always "one", so you can immediately save it
 		void enterInterfaceBodyDeclaration(JavaParser::InterfaceBodyDeclarationContext *ctx) override;
 
 		// If modifiers contain access modifier, it will be return
@@ -48,7 +62,6 @@ class CustomListener : public JavaBaseListener
 
 		// These methods are used to increment numberSourceLinesOfCode
 		void enterLocalVariableDeclarationStatement(JavaParser::LocalVariableDeclarationStatementContext *ctx) override;
-		void enterStatement(JavaParser::StatementContext *ctx) override;
 		void enterAnnotationName(JavaParser::AnnotationNameContext *ctx) override;
 		void enterAnnotationTypeDeclaration(JavaParser::AnnotationTypeDeclarationContext *ctx) override;
 		void enterAnnotationMethodOrConstantRest(JavaParser::AnnotationMethodOrConstantRestContext *ctx) override;
@@ -61,6 +74,9 @@ class CustomListener : public JavaBaseListener
 		// Used to access the current class or interface during the tree traversal
 		std::vector <std::shared_ptr <ClassDescription> > classesForTraversal;
 		std::vector <std::shared_ptr <InterfaceDescription> > interfacesForTraversal;
+
+		// Only class methods are added here
+		std::vector <std::shared_ptr <MethodDescription> > methodsForTraversal;
 };
 
 }}

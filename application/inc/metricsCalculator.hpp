@@ -21,7 +21,7 @@ class MetricsCalculator
 		MetricsCalculator& operator=(MetricsCalculator const&) = delete;
 		MetricsCalculator& operator=(MetricsCalculator&&) = delete;
 
-		MetricsCalculator(antlr4::CommonTokenStream *programTokens);
+		MetricsCalculator(antlr4::CommonTokenStream *programTokens, antlr4::tree::ParseTree* tree);
 
 		// Increment numberSourceLinesOfCode
 		void bumpNumberSourceLinesOfCode();
@@ -37,11 +37,15 @@ class MetricsCalculator
 		size_t getNumberOfCommentLines() const;
 
 
+		// It outputs cyclomatic complexity for each method in each class and average cyclomatic complexity for each class
+		void showCyclomaticComplexities() const;
+
 		// Metrics
 		double getMethodHidingFactor() const;
 		double getAttributeHidingFactor() const;
 		size_t getSourceLinesOfCode() const;
 		double getCommentPercentage() const;
+		size_t getAverageCyclomaticComplexity() const;
 
 	private:
 		// Stream of tokens to count the comments
