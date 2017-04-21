@@ -42,9 +42,9 @@ int main(int argc, const char* argv[])
 
 	// cout << "Total number of interfaces and classes if " << treeMetricsCalculator.totalAnalyzisWidthOfInheritanceTree().first.size() << endl;
 	// cout << "Total number of classes if " << treeMetricsCalculator.totalAnalyzisMethodInheritanceFactor().first.size() << endl;
-	
+
 	cout << "Polymorpism Factor after norming is " << treeMetricsCalculator.getInheritanceAndPolymorpismDegree() << endl;
-	
+
 	cout << "Method Inheritance Factor is " << treeMetricsCalculator.getMethodInheritanceFactor() << endl;
 	cout << "Method Inheritance Degree is " << treeMetricsCalculator.getMethodInheritanceDegree() << endl;
 	// cout << "Not satishfying number of classes is " << treeMetricsCalculator.scanMethodInheritanceFactor().first.size() << endl;
@@ -72,6 +72,6 @@ int main(int argc, const char* argv[])
 	// {
 	// 	cout << "\t" << x.first << " " << x.second << endl;
 	// }
-	
+
 	// treeMetricsCalculator.printInheritanceTree();
 }
