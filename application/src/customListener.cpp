@@ -196,7 +196,7 @@ void CustomListener::enterInterfaceBodyDeclaration(JavaParser::InterfaceBodyDecl
 	if (!name.empty())
 	{
 		std::shared_ptr<MethodDescription> methodPtr(new MethodDescription(modifier, name, name + parameters));
-		classesForTraversal.back()->addMethod(methodPtr);
+		interfacesForTraversal.back()->addMethod(methodPtr);
 	}
 }
 

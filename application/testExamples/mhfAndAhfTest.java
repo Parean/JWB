@@ -1,15 +1,15 @@
 /**
-	MhfAndAhfTest has 0 methods, 0 of which is private.
-	Class has 5 methods, 2 of which is private.
+	Class has 6 methods, 2 of which is private.
 	GenericClass has 3 methods, 1 of which is private.
+	MhfAndAhfTest has 0 methods, 0 of which is private.
 	Interface has 3 methods, 1 of which is private.
 	GenericInterface has 2 methods, 1 of which is private.
-	MhfAndAhfTest has 0 attributes, 0 of which is private.
 	Class has 3 attributes, 1 of which is private.
 	GenericClass has 2 attributes, 1 of which is private.
+	MhfAndAhfTest has 0 attributes, 0 of which is private.
 
-	MHF 0.384615
-	AHF 0.4
+	Method hiding factor: 0.357143
+	Attribute hiding factor: 0.4
 */
 
 public class MhfAndAhfTest
@@ -36,6 +36,7 @@ public class MhfAndAhfTest
 
 		public void method3(Object x){}
 		public Object method4(int pos){}
+		public Object method5(int pos){}
 	}
 
 	public class GenericClass<T>
