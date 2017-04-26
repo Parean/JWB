@@ -4,17 +4,26 @@
 
 using std::unordered_set;
 
-semesterProject::Visitor::Visitor(unordered_set<Node const*>& filter) :
-	filter(filter)
+namespace JWB {	namespace details {
+
+Visitor::Visitor(unordered_set<Node const*>& filter, ReturnVisitorStatus<Visitor>) :
+	filter(filter),
+	node(nullptr)
 	{}
 
-bool semesterProject::Visitor::hasVisited(semesterProject::Node const* node)
+bool Visitor::hasVisited(Node const* node)
 {
 	return filter.find(node) != filter.cend();
 }
 
-void semesterProject::Visitor::makeVisited(semesterProject::Node const* node)
+void Visitor::makeVisited(Node const* node)
 {
-	assert(filter.find(node) == filter.cend());
 	filter.insert(node);
 }
+
+void Visitor::setCurrent(Node const* node)
+{
+	this->node = node;
+}
+
+}} // end of namespace JWB::details

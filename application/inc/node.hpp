@@ -2,46 +2,50 @@
 
 #include <memory>
 
-#include "classDescription.hpp"
+#include "treeClassDescription.hpp"
 
-namespace semesterProject
+namespace JWB {	namespace details {
+/// Node of the inheritance tree. Contains an Java interface (or a class).
+/// Also contains pointer to the interface's parents and inheritors if such exist.
+class Node
 {
-	/// Node of the inheritance tree. Contains an Java interface (or a class).
-	/// Also contains pointer to the interface's parents and inheritors if such exist.
-	class Node
-	{
-	public:
-		Node() = delete;
-		Node(Node const &) = delete;
-		Node(Node&& node) = delete;
-		Node& operator=(Node const &) = delete;
-		Node& operator=(Node&& node) = delete;
+public:
+	Node() = delete;
+	Node(Node const &) = delete;
+	Node(Node&& node) = delete;
+	Node& operator=(Node const &) = delete;
+	Node& operator=(Node&& node) = delete;
 
-		/// Takes string as a parameter and constuct shared_ptr of a Interface of this name.
-		Node(InterfaceDescription* interface);
+	/// Takes string as a parameter and constuct shared_ptr of a Interface of this name.
+	Node(TreeInterfaceDescription* interface);
+	Node(TreeInterfaceDescription* interface, std::vector<Node const*> inheritors);
 
-		/// Add inheritor to the contained interface.
-		void addInheritor(Node* newInheritor);
+	void addInheritor(Node const* newInheritor);
 
-		/// Add parent to the contained interface.
-		void addParent(Node* newParent);
+	void addParent(Node const* newParent);
 
-		/// Get true if there is no parent to the contained interface.
-		bool isOrphan() const;
+	/// Get true if there is no parent to the contained interface.
+	bool isOrphan() const;
 
-		/// Returns pointer to interface.
-		InterfaceDescription const* getInterface() const;
+	TreeInterfaceDescription const* getInterface() const;
+	std::vector<Node const*> const& getInheritors() const;
+	std::vector<Node const*> const& getParents() const;
 
-		/// Takes visitor, gives it contained Java interface (class).
-		/// After that dfs into inheritors.
-		void takeVisitor(Visitor* visitor) const;
+	void updateHashes();
 
-	private:
-		std::shared_ptr<InterfaceDescription> interfaceDescription;
+private:
+	std::shared_ptr<TreeInterfaceDescription> treeInterfaceDescription;
 
-		std::vector<Node*> inheritors;
-		std::vector<Node*> parents;
+	std::vector<Node const*> inheritors;
+	std::vector<Node const*> parents;
+};
 
-		friend class dfsFunctions;
-	};
-}
+/// Takes visitor, gives it contained Java interface (class).
+/// After that dfs into inheritors.
+void takeVisitorDown(Visitor* visitor, Node const* node);
+
+/// Takes visitor, gives it contained Java interface (class).
+/// After that dfs into parents.
+void takeVisitorUp(Visitor* visitor, Node const* node);
+
+}} // end of namespace JWB::details

@@ -1,18 +1,22 @@
 #include "inheritanceTree.hpp"
 
+#include <cassert>
+
 using std::vector;
 using std::move;
 using std::shared_ptr;
-using semesterProject::Node;
 using std::unordered_set;
 using std::string;
+using std::make_unique;
 
-semesterProject::InheritanceTree::InheritanceTree(vector<Node*> roots, vector<shared_ptr<Node>> nodes) :
-	roots(move(roots)) ,
-	nodes(move(nodes))
-	{}
+namespace JWB {	namespace details {
 
-vector<Node*> const& semesterProject::InheritanceTree::getRoots() const
+InheritanceTree::InheritanceTree(vector<Node const*> roots, vector<shared_ptr<Node>> nodes) :
+	pseudoRoot(new Node(new TreeInterfaceDescription("PseudoRoot"), move(roots))),
+	nodes(nodes.cbegin(), nodes.cend())
 {
-	return roots;
+	assert(!this->pseudoRoot->getInheritors().empty());
+	assert(!this->nodes.empty());	
 }
+
+}} // end of namespace JWB::details

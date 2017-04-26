@@ -3,20 +3,27 @@
 #include <tuple>
 #include <cassert>
 
+#include <iostream>
+using std::cout;
+using std::endl;
+
 using std::vector;
 using std::string;
 using std::move;
 using std::pair;
 using std::shared_ptr;
-using semesterProject::Node;
-using semesterProject::InterfaceDescription;
 using std::tuple;
 using std::get;
 
-void semesterProject::CurrentlyBuildingTree::addNodeAndConnections(InterfaceDescription* interface, vector<string> parentNames)
+namespace JWB {	namespace details {
+
+void CurrentlyBuildingTree::addNodeAndConnections(TreeInterfaceDescription* interface, vector<string> parentNames)
 {
 	// As object use after building real tree is not valid, continueing use of the object counts as a bag.
 	assert(!isBuilded);
+	// Interface should never be nullptr.
+	assert(interface);
+	// parentsNames may be empty.
 
 	// New node is constructed.
 	nodes.emplace_back(new Node(interface));
@@ -26,7 +33,7 @@ void semesterProject::CurrentlyBuildingTree::addNodeAndConnections(InterfaceDesc
 	connections.emplace_back(move(parentNames));
 }
 
-semesterProject::InheritanceTree semesterProject::CurrentlyBuildingTree::buildTree()
+InheritanceTree CurrentlyBuildingTree::buildTree()
 {
 	// Nodes should not be empty when a tree is constructed. It's a bag.
 	assert(nodes.size());
@@ -35,7 +42,7 @@ semesterProject::InheritanceTree semesterProject::CurrentlyBuildingTree::buildTr
 	assert(nodes.size() == connections.size());
 
 	// Alias to iterate through vectors of shared_ptr of Nodes, vector of vector of strirngs simulatniously.
-	using DoubleIterator = tuple <vector <shared_ptr <semesterProject::Node> >::const_iterator, 
+	using DoubleIterator = tuple <vector <shared_ptr <Node> >::const_iterator, 
 								  vector <std::vector <string> >::const_iterator>;
 
 	// All connections are set here. Interfaces are checked to be userdefined, not got from a library and then added to the inheritence tree.
@@ -54,13 +61,14 @@ semesterProject::InheritanceTree semesterProject::CurrentlyBuildingTree::buildTr
 	}
 
 	// Roots are distingwished from the rest and contained aside.
-	vector<Node*> roots;
-	for (auto const& nodePointer : nodes)
+	vector<Node const*> roots;
+	for (auto nodePointer : nodes)
 	{
 		if (nodePointer->isOrphan())
 		{
 			roots.push_back(nodePointer.get());
 		}
+		nodePointer->updateHashes();
 	}
 
 	// This sets the object in invalid state to be used.
@@ -68,3 +76,5 @@ semesterProject::InheritanceTree semesterProject::CurrentlyBuildingTree::buildTr
 
 	return move(InheritanceTree(move(roots), move(nodes)));
 }
+
+}} // end of namespace JWB::details

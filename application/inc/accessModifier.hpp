@@ -2,7 +2,9 @@
 
 namespace JWB {	namespace details {
 
-enum class AccessModifier
+/// @class AccessModifier
+/// @brief Describes access modifier to a interface/class, method, field, etc.
+enum class AccessModifier : size_t
 {
 	DEFAULT,
 	PUBLIC,
@@ -10,4 +12,4 @@ enum class AccessModifier
 	PRIVATE
 };
 
-}}
+}} // end of namespace JWB::details

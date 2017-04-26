@@ -3,23 +3,24 @@
 #include "JavaBaseListener.h"
 #include "currentlyBuildingTree.hpp"
 
-namespace semesterProject
+#include <vector>
+
+namespace JWB {	namespace details {
+/// Listener of the Antlr4 tree that construst inherintence tree.
+class inheritanceTreeConstructorListener : public JavaBaseListener
 {
-	/// Listener of the Antlr4 tree that construst inherintence tree.
-	class inheritanceTreeConstructorListener : public JavaBaseListener
-	{
-	public:
-		inheritanceTreeConstructorListener(CurrentlyBuildingTree& currentlyBuildingTree);
+public:
+	inheritanceTreeConstructorListener(CurrentlyBuildingTree& currentlyBuildingTree);
 
-		/// Enters InterfaceDeclarationContext Node in the tree and creates new mask for future InterfaceDesription.
-		void enterInterfaceDeclaration(JavaParser::InterfaceDeclarationContext *ctx) override;
+private:
+	/// Extractes info for future InterfaceDesription object.
+	void enterInterfaceDeclaration(JavaParser::InterfaceDeclarationContext *ctx) override;
 
 
-		/// Enters InterfaceDeclarationContext Node in the tree and creates new mask for future InterfaceDesription.
-		/// Should be rewriten to fit classes, not interfaces.
-		void enterClassDeclaration(JavaParser::ClassDeclarationContext *ctx) override;
+	/// Extractes info for future ClassDecsription object.
+	void enterClassDeclaration(JavaParser::ClassDeclarationContext *ctx) override;
 
-	private:
-		CurrentlyBuildingTree& currentlyBuildingTree;
-	};
-}
+	CurrentlyBuildingTree& currentlyBuildingTree;
+};
+
+}} // end of namespace JWB::details
