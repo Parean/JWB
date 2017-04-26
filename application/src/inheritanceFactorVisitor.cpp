@@ -42,15 +42,15 @@ public:
 		inheritedMethodNumber(inheritedMethodNumber)
 	{}
 
-	void visit(TreeClassDescription const* TreeClassDescription)
+	void visit(TreeClassDescription const* treeClassDescription)
 	{
 		// Seems that Node garantes notemptyness of TreeClassDescription, but still.
-		assert(TreeClassDescription);
+		assert(treeClassDescription);
 
 		/// Maximum number of possibly inherited methods. It is decremented when override found.
 		size_t possibleInheritanceNumber = inheritedMethodsRealSize;
 
-		for (auto const x : TreeClassDescription->getMethods())
+		for (auto const x : treeClassDescription->getMethods())
 		{
 			totalMethodNumber++;
 
@@ -63,8 +63,11 @@ public:
 				inheritedMethodsRealSize++;
 				possibleInheritanceNumber--;
 			}
-			inheritedMethods.insert({x.get(), 1});
-			inheritedMethodsRealSize++;
+			if (x.get()->getName() != treeClassDescription->getName())
+			{
+				inheritedMethods.insert({x.get(), 1});
+				inheritedMethodsRealSize++;
+			}
 		}
 
 		inheritedMethodNumber += possibleInheritanceNumber;
@@ -76,9 +79,9 @@ public:
 		assert(true);
 	}
 
-	void visitBack(TreeClassDescription const* TreeClassDescription) 
+	void visitBack(TreeClassDescription const* treeClassDescription) 
 	{
-		for (auto const x : TreeClassDescription->getMethods())
+		for (auto const x : treeClassDescription->getMethods())
 		{
 			auto iter = inheritedMethods.find(x.get());
 			if (iter != inheritedMethods.cend())
@@ -115,7 +118,7 @@ private:
 	size_t& inheritedMethodNumber;
 };
 
-void InheritanceFactorVisitor::visit(TreeClassDescription const* TreeClassDescription)
+void InheritanceFactorVisitor::visit(TreeClassDescription const* treeClassDescription)
 {
 	assert(node);
 	TreeOfClassesInheritanceVisitor helperVisitor(Visitor::filter, result.totalMethodNumber, result.inheritedMethodNumber);

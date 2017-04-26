@@ -8,6 +8,10 @@ using std::unordered_set;
 using std::vector;
 using std::move;
 
+#include <iostream>
+using std::cout;
+using std::endl;
+
 namespace JWB {	namespace details {
 
 class ClassListsVisitor;
@@ -32,7 +36,11 @@ public:
 		result(result)
 	{}
 
-	void visit(TreeClassDescription const* TreeClassDescription) override
+	void visit(TreeClassDescription const*) override {}
+
+	void visit(TreeInterfaceDescription const*) override {}
+
+	void visitBack(TreeClassDescription const*) override
 	{
 		for (auto const* x : Visitor::node->getInheritors())
 		{
@@ -40,10 +48,6 @@ public:
 		}
 		result.classLists.insert(node);
 	}
-
-	void visit(TreeInterfaceDescription const*) override {}
-
-	void visitBack(TreeClassDescription const*) override {};
 
 	void visitBack(TreeInterfaceDescription const*) override {};
 

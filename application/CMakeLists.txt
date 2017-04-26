@@ -1,10 +1,9 @@
-
 # -*- mode:cmake -*-
 if(NOT UNIX)
  	message(FATAL "Unsupported operating system")
 endif()
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -32,12 +31,19 @@ include_directories(
 	)
 
 set(JWB_SRC
-	${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/metricsCalculator.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/customListener.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/classDescription.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/interfaceDescription.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/methodDescription.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/runSrc/main.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/treeMethodDescription.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/treeInterfaceDescription.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/treeClassDescription.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/node.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/inheritanceTree.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/currentlyBuildingTree.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/inheritanceTreeConstructorListener.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/visitor.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/treePrinterVisitor.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/inheritanceFactorVisitor.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/graphSearchFunctions.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/treeMetricsCalculator.cpp
 	${JWB-GENERATED_SRC}
 	)
 

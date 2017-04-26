@@ -3,9 +3,10 @@
 #include "JavaParser.h"
 #include <iostream>
 
-#include "metrics.hpp"
+#include "treeMetricsCalculator.hpp"
 
 using namespace antlr4;
+using namespace std;
 
 int main(int argc, const char* argv[]) 
 {
@@ -16,5 +17,9 @@ int main(int argc, const char* argv[])
   CommonTokenStream tokens(&lexer);
   JavaParser parser(&tokens);
   tree::ParseTree *tree = parser.compilationUnit();
-  semesterProject::treeMetrics(tree);
+  JWB::details::TreeMetricsCalculator treeMetricsCalculator(tree);
+  cout << treeMetricsCalculator.getMethodInheritanceHidingFactor() << endl;
+  cout << treeMetricsCalculator.getDepthOfInheritanceTree() << endl;
+  cout << treeMetricsCalculator.getWidthOfInheritanceTree() << endl;
+  // treeMetricsCalculator.printInheritanceTree();
 }

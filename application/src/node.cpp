@@ -67,6 +67,7 @@ void takeVisitorDown(Visitor* visitor, Node const* node)
 		{
 			takeVisitorDown(visitor, x);
 		}
+		visitor->setCurrent(node);
 		node->getInterface()->takeVisitorBack(visitor);
 		visitor->makeVisited(node);
 	}
@@ -84,6 +85,7 @@ void takeVisitorUp(Visitor* visitor, Node const* node)
 		{
 			takeVisitorDown(visitor, x);
 		}
+		visitor->setCurrent(node);
 		node->getInterface()->takeVisitorBack(visitor);
 		visitor->makeVisited(node);
 	}
