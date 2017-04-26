@@ -66,6 +66,7 @@ void addMethod(TreeClassDescription* treeClassDescription, JavaParser::ClassBody
 	if (memberDeclaration && memberDeclaration->methodDeclaration())
 	{
 		auto const modifier = getAccessModifier<TreeClassDescription>(ctx->modifier());
+		assert(memberDeclaration->methodDeclaration()->Identifier());
 		string name = memberDeclaration->methodDeclaration()->Identifier()->getText();
 		string returnType;
 		if (!memberDeclaration->methodDeclaration()->typeType())
@@ -111,6 +112,7 @@ void addMethod(TreeInterfaceDescription* interface, JavaParser::InterfaceBodyDec
 	if (memberDeclaration && memberDeclaration->interfaceMethodDeclaration())
 	{
 		auto const modifier = getAccessModifier<TreeInterfaceDescription>(ctx->modifier());
+		assert(memberDeclaration->interfaceMethodDeclaration()->Identifier());
 		string name = memberDeclaration->interfaceMethodDeclaration()->Identifier()->getText();
 		string returnType;
 		if (!memberDeclaration->interfaceMethodDeclaration()->typeType())
@@ -139,6 +141,40 @@ void addMethod(TreeInterfaceDescription* interface, JavaParser::InterfaceBodyDec
 			}
 		}
 		interface->addMethod(method);
+	}
+}
+
+void addAttribute(TreeClassDescription* treeClassDescription, JavaParser::ClassBodyDeclarationContext *ctx)
+{
+	assert(ctx);
+	assert(treeClassDescription);
+	auto const memberDeclaration = ctx->memberDeclaration();
+	if (memberDeclaration && memberDeclaration->fieldDeclaration())
+	{
+		auto const modifier = getAccessModifier<TreeInterfaceDescription>(ctx->modifier());
+		assert(memberDeclaration->fieldDeclaration()->variableDeclarators());
+		assert(!memberDeclaration->fieldDeclaration()->variableDeclarators()->variableDeclarator().empty());
+		assert(memberDeclaration->fieldDeclaration()->variableDeclarators()->variableDeclarator(0)->variableDeclaratorId());
+		assert(memberDeclaration->fieldDeclaration()->variableDeclarators()->variableDeclarator(0)->variableDeclaratorId()->Identifier());
+		string name = memberDeclaration->fieldDeclaration()->variableDeclarators()->variableDeclarator(0)->variableDeclaratorId()->Identifier()->getText();
+		string type;
+		if (!memberDeclaration->fieldDeclaration()->typeType())
+		{
+			type = "void";
+		}
+		else if (memberDeclaration->fieldDeclaration()->typeType()->classOrInterfaceType())
+		{
+			type = memberDeclaration->fieldDeclaration()->typeType()->classOrInterfaceType()->getText();
+		}
+		else if(memberDeclaration->fieldDeclaration()->typeType()->primitiveType())
+		{
+			type = memberDeclaration->fieldDeclaration()->typeType()->primitiveType()->getText();
+		}
+		else
+		{
+			assert(false);
+		}
+		treeClassDescription->addAttribute(new TreeAttributeDescription(move(type), move(name), modifier));
 	}
 }
 
@@ -210,6 +246,7 @@ void inheritanceTreeConstructorListener::enterClassDeclaration(JavaParser::Class
 		for (auto x : ctx->classBody()->classBodyDeclaration())
 		{
 			addMethod(treeClassDescription, x);
+			addAttribute(treeClassDescription, x);
 		}
 	}
 

@@ -2,35 +2,37 @@
 
 #include <unordered_map>
 #include "visitor.hpp"
+#include "treeMethodDescription.hpp"
 
 namespace JWB {	namespace details {	
-class InheritanceFactorVisitor;
+class InheritanceAndPolymorphismFactorVisitor;
 
-/// @class ReturnVisitorStatus<InheritanceFactorVisitor>
+/// @class ReturnVisitorStatus<InheritanceAndPolymorphismFactorVisitor>
 /// @brief Contains result to Method Inheritance Factor (result would be ratio of these two).
 template <>
-struct ReturnVisitorStatus<InheritanceFactorVisitor> 
+struct ReturnVisitorStatus<InheritanceAndPolymorphismFactorVisitor> 
 {
 	ReturnVisitorStatus() = default;
-	size_t totalMethodNumber = 0;
-	size_t inheritedMethodNumber = 0;
+	uint64_t totalMethodNumber = 0;
+	uint64_t inheritedMethodNumber = 0;
+	int64_t overridenMethodNumber = 0;
 };
 
-/// @class InheritanceFactorVisitor
+/// @class InheritanceAndPolymorphismFactorVisitor
 /// @brief Visitor used to count Method Inheritance Factor.
-class InheritanceFactorVisitor : public Visitor
+class InheritanceAndPolymorphismFactorVisitor : public Visitor
 {
 public:
-	InheritanceFactorVisitor() = delete;
-	InheritanceFactorVisitor(InheritanceFactorVisitor const&) = delete;
-	InheritanceFactorVisitor(InheritanceFactorVisitor&&) = default;
-	InheritanceFactorVisitor& operator=(InheritanceFactorVisitor const&) = delete;
-	InheritanceFactorVisitor& operator=(InheritanceFactorVisitor&&) = delete;
+	InheritanceAndPolymorphismFactorVisitor() = delete;
+	InheritanceAndPolymorphismFactorVisitor(InheritanceAndPolymorphismFactorVisitor const&) = delete;
+	InheritanceAndPolymorphismFactorVisitor(InheritanceAndPolymorphismFactorVisitor&&) = default;
+	InheritanceAndPolymorphismFactorVisitor& operator=(InheritanceAndPolymorphismFactorVisitor const&) = delete;
+	InheritanceAndPolymorphismFactorVisitor& operator=(InheritanceAndPolymorphismFactorVisitor&&) = delete;
 
 	/// Takes filter that will contain visited nodes.
-	InheritanceFactorVisitor(std::unordered_set<Node const*>& filter, ReturnVisitorStatus<InheritanceFactorVisitor>& result);
+	InheritanceAndPolymorphismFactorVisitor(std::unordered_set<Node const*>& filter, ReturnVisitorStatus<InheritanceAndPolymorphismFactorVisitor>& result);
 
-	/// Visit father of a class inheritance line. (If there is a class parent, InheritanceFactorVisitor may work incorrectly).
+	/// Visit father of a class inheritance line. (If there is a class parent, InheritanceAndPolymorphismFactorVisitor may work incorrectly).
 	void visit(TreeClassDescription const* TreeClassDescription) override;
 
 	/// Does nothing.
@@ -43,8 +45,18 @@ public:
 	void visitBack(TreeInterfaceDescription const*) override;
 
 private:
-	class TreeOfClassesInheritanceVisitor;
-	ReturnVisitorStatus<InheritanceFactorVisitor>& result;
+	struct hash_for_TreeMethodDescription
+	{
+		size_t operator()(TreeMethodDescription const* p) const;
+	};
+	struct equal_to_for_TreeMethodDescription
+	{
+		bool operator()(TreeMethodDescription const* lhs, TreeMethodDescription const* rhs) const;
+	};
+
+	std::unordered_map<TreeMethodDescription const*, size_t, hash_for_TreeMethodDescription, equal_to_for_TreeMethodDescription> inheritedMethods;
+	size_t inheritedMethodsRealSize;
+	ReturnVisitorStatus<InheritanceAndPolymorphismFactorVisitor>& result;
 };
 
 }} // end of namespace JWB::details

@@ -3,14 +3,12 @@
 #include "inheritanceFactorVisitor.hpp"
 #include "graphSearchFunctions.hpp"
 #include "treePrinterVisitor.hpp"
+#include "numberOfChildrenVisitor.hpp"
+#include "attributeInheritanceFactorVisitor.hpp"
 
 using std::unordered_set;
 using std::vector;
 using std::move;
-
-#include <iostream>
-using std::cout;
-using std::endl;
 
 namespace JWB {	namespace details {
 
@@ -84,14 +82,50 @@ TreeMetricsCalculator::TreeMetricsCalculator(antlr4::tree::ParseTree* parseTree)
 
 double TreeMetricsCalculator::getMethodInheritanceHidingFactor() const
 {
-	ReturnVisitorStatus<InheritanceFactorVisitor> result;
+	ReturnVisitorStatus<InheritanceAndPolymorphismFactorVisitor> result;
 	unordered_set<Node const*> filter;
-	InheritanceFactorVisitor visitor(filter, result);
+	InheritanceAndPolymorphismFactorVisitor visitor(filter, result);
 	for (auto const* x : classLists)
 	{
 		takeVisitorDown(&visitor, x);
 	}
-	return (double)result.inheritedMethodNumber / result.totalMethodNumber;
+	return result.totalMethodNumber ? (double)result.inheritedMethodNumber / result.totalMethodNumber : 0;
+}
+
+double TreeMetricsCalculator::getAttributeInheritanceHidingFactor() const
+{
+	ReturnVisitorStatus<AttributeInheritanceFactorVisitor> result;
+	unordered_set<Node const*> filter;
+	AttributeInheritanceFactorVisitor visitor(filter, result);
+	for (auto const* x : classLists)
+	{
+		takeVisitorDown(&visitor, x);
+	}
+	return result.totalAttributeNumber ? (double)result.inheritedAttributeNumber / result.totalAttributeNumber : 0;
+}
+
+double TreeMetricsCalculator::getPolymorpismFactor() const
+{
+	ReturnVisitorStatus<InheritanceAndPolymorphismFactorVisitor> result;
+	unordered_set<Node const*> filter;
+	InheritanceAndPolymorphismFactorVisitor visitor(filter, result);
+	for (auto const* x : classLists)
+	{
+		takeVisitorDown(&visitor, x);
+	}
+	return result.totalMethodNumber ? (double)result.overridenMethodNumber / result.totalMethodNumber : 0;
+}
+
+double TreeMetricsCalculator::getNumberOfChildrenMetric() const
+{
+	ReturnVisitorStatus<NumberOfChildrenVisitor> result;
+	unordered_set<Node const*> filter;
+	NumberOfChildrenVisitor visitor(filter, result);
+	for (auto const* x : classLists)
+	{
+		takeVisitorDown(&visitor, x);
+	}
+	return result.numberOfInterfacesThatHaveChildren ? (double)result.sumOfChildren / result.numberOfInterfacesThatHaveChildren : 0;
 }
 
 size_t TreeMetricsCalculator::getDepthOfInheritanceTree() const

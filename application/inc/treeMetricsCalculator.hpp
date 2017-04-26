@@ -21,6 +21,11 @@ public:
 	TreeMetricsCalculator(antlr4::tree::ParseTree* parseTree);
 
 	double getMethodInheritanceHidingFactor() const;
+	double getAttributeInheritanceHidingFactor() const;
+	double getPolymorpismFactor() const;
+
+	// Average number of children that classes, that do have children, have.
+	double getNumberOfChildrenMetric() const;
 
 	size_t getDepthOfInheritanceTree() const;
 	size_t getWidthOfInheritanceTree() const;

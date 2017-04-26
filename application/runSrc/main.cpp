@@ -19,7 +19,10 @@ int main(int argc, const char* argv[])
   tree::ParseTree *tree = parser.compilationUnit();
   JWB::details::TreeMetricsCalculator treeMetricsCalculator(tree);
   cout << treeMetricsCalculator.getMethodInheritanceHidingFactor() << endl;
+  cout << treeMetricsCalculator.getAttributeInheritanceHidingFactor() << endl;
+  cout << treeMetricsCalculator.getPolymorpismFactor() << endl;
   cout << treeMetricsCalculator.getDepthOfInheritanceTree() << endl;
   cout << treeMetricsCalculator.getWidthOfInheritanceTree() << endl;
+  cout << treeMetricsCalculator.getNumberOfChildrenMetric() << endl;
   // treeMetricsCalculator.printInheritanceTree();
 }

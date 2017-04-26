@@ -1,6 +1,7 @@
 #pragma once
 
 #include "treeInterfaceDescription.hpp"
+#include "treeAttributeDescription.hpp"
 
 #include <vector>
 #include <string>
@@ -20,8 +21,8 @@ public:
 	TreeClassDescription& operator=(TreeClassDescription&&) = delete;
 	TreeClassDescription(std::string className);
 
-	void addAttribute(AccessModifier modifier, std::string newAttribute);
-	std::vector<std::string> const& getAttributes();
+	void addAttribute(TreeAttributeDescription const* treeAttributeDescription);
+	std::vector<TreeAttributeDescription const*> const& getAttributes() const;
 
 	/// Take visitor and then transfer it "this" to visit() method. 
 	/// Allows visitor get needed notes about current Java class.
@@ -32,8 +33,7 @@ public:
 	void takeVisitorBack(Visitor* visitor) const override;
 
 private:
-	std::vector<std::string> attributes;
-	std::vector<std::string const*> privateAttributes;
+	std::vector<TreeAttributeDescription const*> attributes;
 };
 
 }} // end of namespace JWB::details

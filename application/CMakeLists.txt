@@ -33,6 +33,7 @@ include_directories(
 set(JWB_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/runSrc/main.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeMethodDescription.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/treeAttributeDescription.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeInterfaceDescription.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeClassDescription.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/node.cpp
@@ -42,6 +43,8 @@ set(JWB_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/visitor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treePrinterVisitor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/inheritanceFactorVisitor.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/attributeInheritanceFactorVisitor.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/numberOfChildrenVisitor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/graphSearchFunctions.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeMetricsCalculator.cpp
 	${JWB-GENERATED_SRC}

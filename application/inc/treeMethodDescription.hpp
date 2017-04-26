@@ -1,8 +1,9 @@
 #pragma once
 
-#include "accessModifier.hpp"
 #include <vector>
 #include <string>
+
+#include "accessModifier.hpp"
 
 namespace JWB {	namespace details {
 /// @class TreeMethodDescription

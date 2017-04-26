@@ -12,17 +12,14 @@ TreeClassDescription::TreeClassDescription(string className) :
 	TreeInterfaceDescription(move(className)) // Assert on emptiness is inside TreeInterfaceDescription.
 {}
 
-void TreeClassDescription::addAttribute(AccessModifier modifier, string newAttribute)
+void TreeClassDescription::addAttribute(TreeAttributeDescription const* treeAttributeDescription)
 {
-	// newAttribute should never be empty. Otherwise it's a bag.
-	assert(!newAttribute.empty());
-	attributes.push_back(move(newAttribute));
-
-	if (modifier == AccessModifier::PRIVATE)
-		privateAttributes.push_back(move(&newAttribute));
+	// treeAttributeDescription should never be nullptr. Otherwise it's a bag.
+	assert(treeAttributeDescription);
+	attributes.emplace_back(treeAttributeDescription);
 }
 
-vector<string> const& TreeClassDescription::getAttributes()
+vector<TreeAttributeDescription const*> const& TreeClassDescription::getAttributes() const
 {
 	return attributes;
 }
