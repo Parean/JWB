@@ -9,7 +9,8 @@ class TreePrinterVisitor;
 template <>
 struct ReturnVisitorStatus<TreePrinterVisitor> {};
 
-/// Prints tree in the following format: "Class/Interface visitied! name, methodes names".
+/// @class TreePrinterVisitor
+/// @brief Prints tree in the following format: "Class/Interface visitied! name, methodes names".
 class TreePrinterVisitor : public Visitor
 {
 public:

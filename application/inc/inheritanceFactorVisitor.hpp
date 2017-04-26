@@ -38,7 +38,7 @@ public:
 	/// Does nothing.
 	void visit(TreeInterfaceDescription const* TreeInterfaceDescription) override;
 
-	/// Does nothing.
+	/// Pops all info about inheriting this class from inheritedMethods.
 	void visitBack(TreeClassDescription const*) override;
 
 	/// Does nothing.

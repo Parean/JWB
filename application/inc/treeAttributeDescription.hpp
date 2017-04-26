@@ -6,6 +6,9 @@
 
 namespace JWB {	namespace details {
 
+/// @class TreeAttributeDescription
+/// @brief Description of a Java attribute. Contains its name, type, access modifier.
+/// Should be contained in TreeClassDescription.
 class TreeAttributeDescription
 {
 public:

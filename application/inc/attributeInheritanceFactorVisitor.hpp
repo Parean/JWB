@@ -8,6 +8,8 @@ namespace JWB {	namespace details {
 
 class AttributeInheritanceFactorVisitor;
 
+/// @class ReturnVisitorStatus<AttributeInheritanceFactorVisitor>
+/// @brief Helper structure for AttributeInheritanceFactorVisitor.
 template <>
 struct ReturnVisitorStatus<AttributeInheritanceFactorVisitor>
 {
@@ -15,6 +17,9 @@ struct ReturnVisitorStatus<AttributeInheritanceFactorVisitor>
 	uint64_t totalAttributeNumber = 0;
 };
 
+
+/// @class AttributeInheritanceFactorVisitor.
+/// @brief Inheritor of Visitor to measure ratio of number of attributes inherited to total number of those.
 class AttributeInheritanceFactorVisitor : public Visitor
 {
 public:
@@ -26,9 +31,16 @@ public:
 
 	AttributeInheritanceFactorVisitor(std::unordered_set<Node const*>& filter, ReturnVisitorStatus<AttributeInheritanceFactorVisitor>& returnStatus);
 
+	/// Adds number of attributes to stack and updates returnStatus.
 	void visit(TreeClassDescription const*) override;
+
+	/// Does nothing.
 	void visit(TreeInterfaceDescription const*) override;
+
+	/// Pops from stack.
 	void visitBack(TreeClassDescription const*) override;
+
+	/// Does nothing.
 	void visitBack(TreeInterfaceDescription const*) override;
 
 private:

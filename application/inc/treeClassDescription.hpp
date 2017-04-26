@@ -9,7 +9,7 @@
 namespace JWB {	namespace details {
 	
 /// @class TreeClassDescription
-/// @brief Description of a Java class. Contains its name, method and attributes names.
+/// @brief Description of a Java class. Contains its name, methods and attributes.
 /// Should be contained in Node as a part of an inheritance tree.
 class TreeClassDescription : public TreeInterfaceDescription
 {
