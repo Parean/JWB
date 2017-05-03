@@ -6,4 +6,4 @@ rm ./CMakeFiles/JWB.dir/*.o
 cp ./temp/depend.make ./CMakeFiles/JWB.dir/
 rm JWB
 make
-./JWB ../testExamples/
+./JWB ../testExamples/Clustering/example2.java

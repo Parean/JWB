@@ -1,12 +1,13 @@
 #include <iostream>
+#include <memory>
 
 #include "antlrComponentsKeeper.hpp"
-#include "metricsCalculator.hpp"
 #include "treeMetricsCalculator.hpp"
+#include "simpleMetricsCalculator.hpp"
+#include "clusteringMetricsCalculator.hpp"
 
 using std::cout;
 using std::endl;
-using std::vector;
 
 int main(int argc, const char* argv[])
 {
@@ -24,24 +25,14 @@ int main(int argc, const char* argv[])
 		return 0;
 	}
 
-	// JWB::details::MetricsCalculator metricsCalculator(keeper);
-	JWB::details::TreeMetricsCalculator treeMetricsCalculator(keeper);
+// Clustering
+JWB::details::ClusteringMetricsCalculator clusteringMetricsCalculator(keeper);
 
-	// metricsCalculator.showNumberOfMethods();
-	// metricsCalculator.showNumberOfFields();
+clusteringMetricsCalculator.showClusteringMetrics();
+cout << endl << clusteringMetricsCalculator.cluster() << endl;
 
-	// cout << "Method hiding factor: " << metricsCalculator.getMethodHidingFactor() << endl;
-	// cout << "Attribute hiding factor: " << metricsCalculator.getAttributeHidingFactor() << endl << endl;
-
-	// cout << "Number of comment lines: " << metricsCalculator.getNumberOfCommentLines() << endl;
-	// cout << "Source lines of code: " << metricsCalculator.getSourceLinesOfCode() << endl;
-	// cout << "Comment percentage: " << metricsCalculator.getCommentPercentage() << endl << endl;
-
-	// metricsCalculator.showCyclomaticComplexities();
-	// cout << endl << "Average cyclomatic complexity for all classes: " << metricsCalculator.getAverageCyclomaticComplexity() << endl;
-
-	// cout << "Total number of interfaces and classes if " << treeMetricsCalculator.totalAnalyzisWidthOfInheritanceTree().first.size() << endl;
-	// cout << "Total number of classes if " << treeMetricsCalculator.totalAnalyzisMethodInheritanceFactor().first.size() << endl;
+// Inheritance
+/*	JWB::details::TreeMetricsCalculator treeMetricsCalculator(keeper);
 
 	cout << "Polymorpism Factor after norming is " << treeMetricsCalculator.getInheritanceAndPolymorpismDegree() << endl;
 
@@ -74,4 +65,5 @@ int main(int argc, const char* argv[])
 	// }
 
 	// treeMetricsCalculator.printInheritanceTree();
+*/
 }
