@@ -33,6 +33,11 @@ void CurrentlyBuildingTree::addNodeAndConnections(TreeInterfaceDescription* inte
 	connections.emplace_back(move(parentNames));
 }
 
+bool CurrentlyBuildingTree::isEmpty() const
+{
+	return nodes.empty();
+}
+
 InheritanceTree CurrentlyBuildingTree::buildTree()
 {
 	// Nodes should not be empty when a tree is constructed. It's a bag.

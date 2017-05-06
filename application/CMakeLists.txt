@@ -3,9 +3,12 @@ if(NOT UNIX)
  	message(FATAL "Unsupported operating system")
 endif()
 
+# set(CMAKE_C_COMPILER "gcc-5")
+# set(CMAKE_CXX_COMPILER "g++-5")
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
 
 set(JWB-GENERATED_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/antlr-for-java/JavaLexer.cpp
@@ -27,7 +30,7 @@ endforeach( src_file ${JWB-GENERATED_SRC} )
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/../antlr4-cpp-runtime-4.6-source/run/usr/local/include/antlr4-runtime
 	${CMAKE_CURRENT_SOURCE_DIR}/antlr-for-java
-	${CMAKE_CURRENT_SOURCE_DIR}/inc
+	${CMAKE_CURRENT_SOURCE_DIR}/inc/
 	${CMAKE_CURRENT_SOURCE_DIR}/inc/treeDescriptions
 	${CMAKE_CURRENT_SOURCE_DIR}/inc/treeVisitors
 	${CMAKE_CURRENT_SOURCE_DIR}/inc/treeStructure

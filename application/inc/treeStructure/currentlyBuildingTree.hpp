@@ -21,6 +21,9 @@ public:
 	/// They will be when buildTree() runs.
 	void addNodeAndConnections(TreeInterfaceDescription* interface, std::vector<std::string> parentNames);
 
+	/// Signals if there are no nodes in built tree.
+	bool isEmpty() const;
+
 	/// With the help of masks builds a real tree. Continuing use of the object
 	/// after invokation of this method is not valid.
 	InheritanceTree buildTree();

@@ -6,6 +6,8 @@
 #include "numberOfChildrenVisitor.hpp"
 #include "attributeInheritanceFactorVisitor.hpp"
 
+#include <exception>
+
 using std::unordered_set;
 using std::vector;
 using std::move;
@@ -70,6 +72,8 @@ InheritanceTree treeConstruction(antlr4::tree::ParseTree* parseTree)
 	CurrentlyBuildingTree hierarchyTreeTemplate;
 	inheritanceTreeConstructorListener listener(hierarchyTreeTemplate);
 	antlr4::tree::ParseTreeWalker::DEFAULT.walk(&listener, parseTree);
+	if (hierarchyTreeTemplate.isEmpty())
+		throw std::invalid_argument("No input classes found, stopping work.");
 	InheritanceTree inheritanceTree = move(hierarchyTreeTemplate.buildTree());
 	return move(inheritanceTree);
 }

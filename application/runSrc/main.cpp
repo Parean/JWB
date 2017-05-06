@@ -18,11 +18,11 @@ int main(int argc, const char* argv[])
   JavaParser parser(&tokens);
   tree::ParseTree *tree = parser.compilationUnit();
   JWB::details::TreeMetricsCalculator treeMetricsCalculator(tree);
-  cout << treeMetricsCalculator.getMethodInheritanceHidingFactor() << endl;
-  cout << treeMetricsCalculator.getAttributeInheritanceHidingFactor() << endl;
-  cout << treeMetricsCalculator.getPolymorpismFactor() << endl;
-  cout << treeMetricsCalculator.getDepthOfInheritanceTree() << endl;
-  cout << treeMetricsCalculator.getWidthOfInheritanceTree() << endl;
-  cout << treeMetricsCalculator.getNumberOfChildrenMetric() << endl;
+  cout << "Method Inheritance Hiding Factor is " << treeMetricsCalculator.getMethodInheritanceHidingFactor() << endl;
+  cout << "Attribute Inheritance Hiding Factor is " <<treeMetricsCalculator.getAttributeInheritanceHidingFactor() << endl;
+  cout << "Polymorpism Factor is " <<treeMetricsCalculator.getPolymorpismFactor() << endl;
+  cout << "Depth of Inheritance tree is " <<treeMetricsCalculator.getDepthOfInheritanceTree() << endl;
+  cout << "Width of Inheritance tree is " <<treeMetricsCalculator.getWidthOfInheritanceTree() << endl;
+  cout << "Average number of children is " <<treeMetricsCalculator.getNumberOfChildrenMetric() << endl;
   // treeMetricsCalculator.printInheritanceTree();
 }

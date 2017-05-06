@@ -2,10 +2,17 @@
 
 #include <string>
 #include <cassert>
+#include <unordered_map>
+#include <utility>
 
 using std::string;
 using std::vector;
 using std::move;
+using std::unordered_map;
+
+#include <iostream>
+using std::cout;
+using std::endl;
 
 namespace JWB {	namespace details {
 
@@ -44,13 +51,19 @@ AccessModifier getAccessModifier(vector<JavaParser::ModifierContext *> const& mo
 	return DefaultAccessModifierGetter<T>::value;
 }
 
-void addParams(TreeMethodDescription* method, JavaParser::FormalParameterContext *ctx)
+void addParams(TreeMethodDescription* method, JavaParser::FormalParameterContext *ctx, unordered_map<string, size_t> const& genericTypes)
 {
 	assert(ctx);
 	assert(ctx->typeType());
 	if (ctx->typeType()->classOrInterfaceType())
 	{
-		method->addParam(ctx->typeType()->classOrInterfaceType()->getText());
+		auto addedType = ctx->typeType()->classOrInterfaceType()->getText();
+		// Generic types are mapped into template "#n", where n is number of appearence type in generic type list.
+		if (genericTypes.count(addedType))
+		{
+			addedType = {'#',(char)genericTypes.find(addedType)->second, 0};
+		}
+		method->addParam(move(addedType));
 	}
 	else if (ctx->typeType()->primitiveType())
 	{
@@ -58,7 +71,7 @@ void addParams(TreeMethodDescription* method, JavaParser::FormalParameterContext
 	}
 }
 
-void addMethod(TreeClassDescription* treeClassDescription, JavaParser::ClassBodyDeclarationContext *ctx)
+void addMethod(TreeClassDescription* treeClassDescription, JavaParser::ClassBodyDeclarationContext *ctx, unordered_map<string, size_t> const& genericTypes)
 {
 	assert(ctx);
 	assert(treeClassDescription);
@@ -76,6 +89,10 @@ void addMethod(TreeClassDescription* treeClassDescription, JavaParser::ClassBody
 		else if (memberDeclaration->methodDeclaration()->typeType()->classOrInterfaceType())
 		{
 			returnType = memberDeclaration->methodDeclaration()->typeType()->classOrInterfaceType()->getText();
+			if (genericTypes.count(returnType))
+			{
+				returnType = {'#',(char)genericTypes.find(returnType)->second, 0};
+			}
 		}
 		else if(memberDeclaration->methodDeclaration()->typeType()->primitiveType())
 		{
@@ -91,7 +108,7 @@ void addMethod(TreeClassDescription* treeClassDescription, JavaParser::ClassBody
 		{
 			for (auto x : memberDeclaration->methodDeclaration()->formalParameters()->formalParameterList()->formalParameter())
 			{
-				addParams(method, x);
+				addParams(method, x, genericTypes);
 			}
 		}
 		treeClassDescription->addMethod(method);
@@ -104,7 +121,7 @@ void addMethod(TreeClassDescription* treeClassDescription, JavaParser::ClassBody
 	}
 }
 
-void addMethod(TreeInterfaceDescription* interface, JavaParser::InterfaceBodyDeclarationContext *ctx)
+void addMethod(TreeInterfaceDescription* interface, JavaParser::InterfaceBodyDeclarationContext *ctx, unordered_map<string, size_t> const& genericTypes)
 {
 	assert(ctx);
 	assert(interface);
@@ -122,6 +139,7 @@ void addMethod(TreeInterfaceDescription* interface, JavaParser::InterfaceBodyDec
 		else if (memberDeclaration->interfaceMethodDeclaration()->typeType()->classOrInterfaceType())
 		{
 			returnType = memberDeclaration->interfaceMethodDeclaration()->typeType()->classOrInterfaceType()->getText();
+
 		}
 		else if(memberDeclaration->interfaceMethodDeclaration()->typeType()->primitiveType())
 		{
@@ -137,14 +155,14 @@ void addMethod(TreeInterfaceDescription* interface, JavaParser::InterfaceBodyDec
 		{
 			for (auto x : memberDeclaration->interfaceMethodDeclaration()->formalParameters()->formalParameterList()->formalParameter())
 			{
-				addParams(method, x);
+				addParams(method, x, genericTypes);
 			}
 		}
 		interface->addMethod(method);
 	}
 }
 
-void addAttribute(TreeClassDescription* treeClassDescription, JavaParser::ClassBodyDeclarationContext *ctx)
+void addAttribute(TreeClassDescription* treeClassDescription, JavaParser::ClassBodyDeclarationContext *ctx, unordered_map<string, size_t> const& genericTypes)
 {
 	assert(ctx);
 	assert(treeClassDescription);
@@ -165,6 +183,10 @@ void addAttribute(TreeClassDescription* treeClassDescription, JavaParser::ClassB
 		else if (memberDeclaration->fieldDeclaration()->typeType()->classOrInterfaceType())
 		{
 			type = memberDeclaration->fieldDeclaration()->typeType()->classOrInterfaceType()->getText();
+			if (genericTypes.count(type))
+			{
+				type = {'#',(char)genericTypes.find(type)->second, 0};
+			}
 		}
 		else if(memberDeclaration->fieldDeclaration()->typeType()->primitiveType())
 		{
@@ -192,6 +214,20 @@ void inheritanceTreeConstructorListener::enterInterfaceDeclaration(JavaParser::I
 	string inheritorName(ctx->Identifier()->getText());
 
 	vector<string> parentNames;
+	unordered_map<string, size_t> genericTypes;
+
+	// Scanning list of generic types.
+	if (ctx->typeParameters())
+	{
+		for (auto x : ctx->typeParameters()->typeParameter())
+		{
+			assert(x->Identifier());
+			assert(!x->Identifier()->getText().empty());
+			assert(!genericTypes.count(x->Identifier()->getText()));
+			// We add CHAR_MAX + 1 so we could cast size_t to char without problems meaning we wouldn't get 0 as a char.
+			genericTypes.emplace(x->Identifier()->getText(), genericTypes.size() + CHAR_MAX + 1);
+		}
+	}
 
 	// Node is scaned for parent-interfaces and then a new mask for a future node is added to the future tree.
 	if (ctx->typeList())
@@ -209,7 +245,7 @@ void inheritanceTreeConstructorListener::enterInterfaceDeclaration(JavaParser::I
 	{
 		for (auto x : ctx->interfaceBody()->interfaceBodyDeclaration())
 		{
-			addMethod(treeInterfaceDescription, x);
+			addMethod(treeInterfaceDescription, x, genericTypes);
 		}
 	}
 
@@ -222,6 +258,21 @@ void inheritanceTreeConstructorListener::enterClassDeclaration(JavaParser::Class
 	string inheritorName(ctx->Identifier()->getText());
 
 	vector<string> parentNames;
+	unordered_map<string, size_t> genericTypes;
+
+	// Scanning list of generic types.
+	if (ctx->typeParameters())
+	{
+		for (auto x : ctx->typeParameters()->typeParameter())
+		{
+			assert(x->Identifier());
+			assert(!x->Identifier()->getText().empty());
+			assert(!genericTypes.count(x->Identifier()->getText()));
+			// We add CHAR_MAX + 1 so we could cast size_t to char without problems meaning we wouldn't get 0 as a char.
+			genericTypes.emplace(x->Identifier()->getText(), genericTypes.size() + CHAR_MAX + 1);
+		}
+	}
+
 	// Node is scaned for parent-class and then a new mask for a future node is added to the future tree.
 	if (ctx->typeType())
 	{
@@ -245,8 +296,8 @@ void inheritanceTreeConstructorListener::enterClassDeclaration(JavaParser::Class
 	{
 		for (auto x : ctx->classBody()->classBodyDeclaration())
 		{
-			addMethod(treeClassDescription, x);
-			addAttribute(treeClassDescription, x);
+			addMethod(treeClassDescription, x, genericTypes);
+			addAttribute(treeClassDescription, x, genericTypes);
 		}
 	}
 

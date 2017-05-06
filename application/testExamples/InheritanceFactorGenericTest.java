@@ -32,23 +32,27 @@ public class InheritanceFactorGenericTest
 	{
 		public A1() {}
 		public void m1(Object a) {}
+		public void m4(int a);
 	}
 	
 	public class A3 extends A2<Object>
 	{
 		public A3() {}
 		public void m3(Object a) {}
+		public void m4(int a);
 	}
 	
 	public class A5 extends A6
 	{
 		public A5() {}
 		public void m5(Object a) {}
+		public void m4(int a);
 	}
 	
 	public class A7 extends A6
 	{
 		public A7() {}
 		public void m7(Object a) {}
+		public void m4(int a);
 	}
 }

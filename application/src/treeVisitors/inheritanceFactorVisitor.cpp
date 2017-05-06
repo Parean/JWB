@@ -41,23 +41,66 @@ void InheritanceAndPolymorphismFactorVisitor::visit(TreeClassDescription const* 
 	int64_t possibleInheritanceNumber = inheritedMethodsRealSize;
 
 	result.overridenMethodNumber += possibleInheritanceNumber;
+	stackOfAddedGenericMethods.emplace_back();
 
 	for (auto const x : treeClassDescription->getMethods())
 	{
-
-		// If method is in inheritedMethods, then it is overriden and not inherited. 
-		// If it is not private, it can be inherited.
-		auto iter = inheritedMethods.find(x.get());
-		if (iter != inheritedMethods.cend())
+		if (x->getIsGeneric())
 		{
-			iter->second++;
-			possibleInheritanceNumber--;
+			bool overridesGeneric = false;
+			// Can count newly added methods!!!!!
+			for (auto y = genericMethods.crbegin(); y != genericMethods.crend() && !overridesGeneric; ++y)
+			{
+				overridesGeneric = methodComparison::compare(*x,*(y->first));
+				if (overridesGeneric && methodComparison::isWider(*x,*(y->first)))
+				{
+					genericMethods.push_back({x.get(),false});
+					stackOfAddedGenericMethods.back()++;
+				}
+			}
+			if (!overridesGeneric)
+			{
+				stackOfAddedGenericMethods.back()++;
+				genericMethods.push_back({x.get(), true});
+				inheritedMethodsRealSize++;
+				result.totalMethodNumber++;
+			}
+			else
+			{
+				possibleInheritanceNumber--;
+				inheritedMethodsRealSize++;
+				result.totalMethodNumber++;
+			}
 		}
-		else if (x.get()->getName() != treeClassDescription->getName())
+		else
 		{
-			inheritedMethods.insert({x.get(), 1});
-			inheritedMethodsRealSize++;
-			result.totalMethodNumber++;
+			// If method is in inheritedMethods, then it is overriden and not inherited. 
+			// If it is not private, it can be inherited.
+			auto iter = inheritedMethods.find(x.get());
+			if (iter != inheritedMethods.cend())
+			{
+				iter->second++;
+				possibleInheritanceNumber--;
+			}
+			else if (x.get()->getName() != treeClassDescription->getName())
+			{
+				bool overridesGeneric = false;
+				for (auto y = genericMethods.crbegin(); y != genericMethods.crend() && !overridesGeneric; ++y)
+				{
+					overridesGeneric = methodComparison::compare(*x,*(y->first));
+				}
+				if (!overridesGeneric)
+				{
+					inheritedMethods.insert({x.get(), 1});
+					inheritedMethodsRealSize++;
+					result.totalMethodNumber++;
+				}
+				else
+				{
+					possibleInheritanceNumber--;
+					inheritedMethodsRealSize++;
+				}
+			}
 		}
 	}
 	result.inheritedMethodNumber += possibleInheritanceNumber;
@@ -72,6 +115,7 @@ void InheritanceAndPolymorphismFactorVisitor::visit(TreeInterfaceDescription con
 
 void InheritanceAndPolymorphismFactorVisitor::visitBack(TreeClassDescription const* treeClassDescription) 
 {
+	assert(!stackOfAddedGenericMethods.empty());
 	for (auto const x : treeClassDescription->getMethods())
 	{
 		auto iter = inheritedMethods.find(x.get());
@@ -85,6 +129,14 @@ void InheritanceAndPolymorphismFactorVisitor::visitBack(TreeClassDescription con
 			}
 		}
 	}
+	for (size_t i = 0; i < stackOfAddedGenericMethods.back(); ++i)
+	{
+		assert(!genericMethods.empty());
+		if (genericMethods.back().second)
+			inheritedMethodsRealSize--;
+		genericMethods.pop_back();
+	}
+	stackOfAddedGenericMethods.pop_back();
 }
 
 void InheritanceAndPolymorphismFactorVisitor::visitBack(TreeInterfaceDescription const*) 

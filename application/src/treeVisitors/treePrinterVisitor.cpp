@@ -18,6 +18,8 @@ void TreePrinterVisitor::visit(TreeClassDescription const* TreeClassDescription)
 	cout << TreeClassDescription->getName() << " methods:" << endl;
 	for (auto const x : TreeClassDescription->getMethods())
 	{
+		if (x->getIsGeneric())
+			cout << "Generic ";
 		cout << x->getReturnType() << " " << x->getName() << " : ";
 		for (auto const y : x->getParamTypes())
 		{
@@ -34,6 +36,8 @@ void TreePrinterVisitor::visit(TreeInterfaceDescription const* TreeInterfaceDesc
 	cout << TreeInterfaceDescription->getName() << " methods:" << endl;
 	for (auto const x : TreeInterfaceDescription->getMethods())
 	{
+		if (x->getIsGeneric())
+			cout << "Generic ";
 		cout << x->getReturnType() << " " << x->getName() << " : ";
 		for (auto const y : x->getParamTypes())
 		{
