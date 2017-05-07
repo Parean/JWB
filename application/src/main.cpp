@@ -24,18 +24,27 @@ int main(int argc, const char* argv[])
 		return 0;
 	}
 
-	JWB::details::MetricsCalculator metricsCalculator(keeper);
+	// JWB::details::MetricsCalculator metricsCalculator(keeper);
+	JWB::details::TreeMetricsCalculator treeMetricsCalculator(keeper);
 
-	metricsCalculator.showNumberOfMethods();
-	metricsCalculator.showNumberOfFields();
+	// metricsCalculator.showNumberOfMethods();
+	// metricsCalculator.showNumberOfFields();
 
-	cout << "Method hiding factor: " << metricsCalculator.getMethodHidingFactor() << endl;
-	cout << "Attribute hiding factor: " << metricsCalculator.getAttributeHidingFactor() << endl << endl;
+	// cout << "Method hiding factor: " << metricsCalculator.getMethodHidingFactor() << endl;
+	// cout << "Attribute hiding factor: " << metricsCalculator.getAttributeHidingFactor() << endl << endl;
 
-	cout << "Number of comment lines: " << metricsCalculator.getNumberOfCommentLines() << endl;
-	cout << "Source lines of code: " << metricsCalculator.getSourceLinesOfCode() << endl;
-	cout << "Comment percentage: " << metricsCalculator.getCommentPercentage() << endl << endl;
+	// cout << "Number of comment lines: " << metricsCalculator.getNumberOfCommentLines() << endl;
+	// cout << "Source lines of code: " << metricsCalculator.getSourceLinesOfCode() << endl;
+	// cout << "Comment percentage: " << metricsCalculator.getCommentPercentage() << endl << endl;
 
-	metricsCalculator.showCyclomaticComplexities();
-	cout << endl << "Average cyclomatic complexity for all classes: " << metricsCalculator.getAverageCyclomaticComplexity() << endl;
+	// metricsCalculator.showCyclomaticComplexities();
+	// cout << endl << "Average cyclomatic complexity for all classes: " << metricsCalculator.getAverageCyclomaticComplexity() << endl;
+	
+	cout << "Method Inheritance Hiding Factor is " << treeMetricsCalculator.getMethodInheritanceHidingFactor() << endl;
+	cout << "Attribute Inheritance Hiding Factor is " <<treeMetricsCalculator.getAttributeInheritanceHidingFactor() << endl;
+	cout << "Polymorpism Factor is " <<treeMetricsCalculator.getPolymorpismFactor() << endl;
+	cout << "Depth of Inheritance tree is " <<treeMetricsCalculator.getDepthOfInheritanceTree() << endl;
+	cout << "Width of Inheritance tree is " <<treeMetricsCalculator.getWidthOfInheritanceTree() << endl;
+	cout << "Average number of children is " <<treeMetricsCalculator.getNumberOfChildrenMetric() << endl;
+	// treeMetricsCalculator.printInheritanceTree();
 }

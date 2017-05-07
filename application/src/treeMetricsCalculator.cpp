@@ -1,5 +1,5 @@
 #include "treeMetricsCalculator.hpp"
-#include "inheritanceTreeConstructorListener.hpp"
+#include "constructInheritanceTree.hpp"
 #include "inheritanceFactorVisitor.hpp"
 #include "graphSearchFunctions.hpp"
 #include "treePrinterVisitor.hpp"
@@ -67,22 +67,10 @@ vector<Node const*> privateGetClassLists(InheritanceTree const& inheritanceTree)
 	return move(classLists);
 }
 
-InheritanceTree treeConstruction(antlr4::tree::ParseTree* parseTree)
-{
-	CurrentlyBuildingTree hierarchyTreeTemplate;
-	inheritanceTreeConstructorListener listener(hierarchyTreeTemplate);
-	antlr4::tree::ParseTreeWalker::DEFAULT.walk(&listener, parseTree);
-	if (hierarchyTreeTemplate.isEmpty())
-		throw std::invalid_argument("No input classes found, stopping work.");
-	InheritanceTree inheritanceTree = move(hierarchyTreeTemplate.buildTree());
-	return move(inheritanceTree);
-}
-
-TreeMetricsCalculator::TreeMetricsCalculator(antlr4::tree::ParseTree* parseTree) :
-	inheritanceTree(treeConstruction(parseTree)),
+TreeMetricsCalculator::TreeMetricsCalculator(AntlrComponentsKeeper &keeper) :
+	inheritanceTree(treeConstruction::constructInheritanceTree(keeper)),
 	classLists(privateGetClassLists(inheritanceTree))
-{
-}
+{}
 
 double TreeMetricsCalculator::getMethodInheritanceHidingFactor() const
 {

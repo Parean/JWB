@@ -2,6 +2,7 @@
 
 #include "antlr4-runtime.h"
 #include "inheritanceTree.hpp"
+#include "antlrComponentsKeeper.hpp"
 
 #include <vector>
 
@@ -18,7 +19,7 @@ public:
 	TreeMetricsCalculator operator=(TreeMetricsCalculator const&) = delete;
 	TreeMetricsCalculator operator=(TreeMetricsCalculator&&) = delete;
 
-	TreeMetricsCalculator(antlr4::tree::ParseTree* parseTree);
+	TreeMetricsCalculator(AntlrComponentsKeeper &keeper);
 
 	double getMethodInheritanceHidingFactor() const;
 	double getAttributeInheritanceHidingFactor() const;

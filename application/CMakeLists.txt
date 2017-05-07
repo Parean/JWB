@@ -57,6 +57,7 @@ set(JWB_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/node.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/inheritanceTree.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/currentlyBuildingTree.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/constructInheritanceTree.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/inheritanceTreeConstructorListener.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/graphSearchFunctions.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeMetricsCalculator.cpp
