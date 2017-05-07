@@ -4,6 +4,7 @@
 #include "metricsCalculator.hpp"
 #include "customListener.hpp"
 
+using std::vector;
 using std::cout;
 using std::endl;
 using std::shared_ptr;
@@ -11,14 +12,19 @@ using namespace antlr4;
 
 namespace JWB {	namespace details {
 
-MetricsCalculator::	MetricsCalculator(CommonTokenStream *programTokens, tree::ParseTree* tree):
-	tokens(programTokens)
+MetricsCalculator::	MetricsCalculator(AntlrComponentsKeeper &keeper)
 {
-	assert(programTokens);
-	assert(tree);
+	tokens = keeper.getTokens();
+	auto trees = keeper.getTrees();
 
-	CustomListener listener(this);
-	tree::ParseTreeWalker::DEFAULT.walk(&listener, tree);
+	assert(!tokens.empty());
+	assert(!trees.empty());
+
+	for (auto const& t : trees)
+	{
+		CustomListener listener(this);
+		tree::ParseTreeWalker::DEFAULT.walk(&listener, t);
+	}
 }
 
 void MetricsCalculator::bumpNumberSourceLinesOfCode()
@@ -48,28 +54,31 @@ size_t MetricsCalculator::getNumberOfCommentLines() const
 {
 	size_t numberOfCommentLines = 0;
 
-	for(auto const& t : tokens->getTokens())
+	for (auto const& ts : tokens)
 	{
-		// If token is comment, it is located in hidden channel and getChannel() return 1
-		// If token doesn't located in hidden channel, getChannel() return 0 and we move on to the next iteration
-		if (!t->getChannel())
-			continue;
-
-		if (t->getText().substr(0,2) == "//")
+		for(auto const& t : ts->getTokens())
 		{
-			numberOfCommentLines++;
-			continue;
-		}
+			// If token is comment, it is located in hidden channel and getChannel() return 1
+			// If token doesn't located in hidden channel, getChannel() return 0 and we move on to the next iteration
+			if (!t->getChannel())
+				continue;
 
-		// We count the number of lines in the comments, so in a multiline comment, we need to count the line feed characters
-		for(auto const& c : t->getText())
-		{
-			if (c == '\n')
+			if (t->getText().substr(0,2) == "//")
+			{
 				numberOfCommentLines++;
-		}
+				continue;
+			}
 
-		// Last line hasn`t feed character
-		numberOfCommentLines++;
+			// We count the number of lines in the comments, so in a multiline comment, we need to count the line feed characters
+			for(auto const& c : t->getText())
+			{
+				if (c == '\n')
+					numberOfCommentLines++;
+			}
+
+			// Last line hasn`t feed character
+			numberOfCommentLines++;
+		}
 	}
 
 	return numberOfCommentLines;

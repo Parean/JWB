@@ -30,14 +30,21 @@ endforeach( src_file ${JWB-GENERATED_SRC} )
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/../antlr4-cpp-runtime-4.6-source/run/usr/local/include/antlr4-runtime
 	${CMAKE_CURRENT_SOURCE_DIR}/antlr-for-java
-	${CMAKE_CURRENT_SOURCE_DIR}/inc/
+	${CMAKE_CURRENT_SOURCE_DIR}/../boost/boost_1_64_0
+	${CMAKE_CURRENT_SOURCE_DIR}/inc
 	${CMAKE_CURRENT_SOURCE_DIR}/inc/treeDescriptions
 	${CMAKE_CURRENT_SOURCE_DIR}/inc/treeVisitors
 	${CMAKE_CURRENT_SOURCE_DIR}/inc/treeStructure
 	)
 
 set(JWB_SRC
-	${CMAKE_CURRENT_SOURCE_DIR}/runSrc/main.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/antlrComponentsKeeper.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/metricsCalculator.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/customListener.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/classDescription.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/interfaceDescription.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/methodDescription.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeDescriptions/treeMethodDescription.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeDescriptions/treeAttributeDescription.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeDescriptions/treeInterfaceDescription.cpp
@@ -68,7 +75,11 @@ add_executable(JWB
 	${JWB_SRC}
 	)
 
-target_link_libraries(JWB  ${CMAKE_CURRENT_SOURCE_DIR}/../antlr4-cpp-runtime-4.6-source/dist/libantlr4-runtime.a)
+target_link_libraries(JWB
+	${CMAKE_CURRENT_SOURCE_DIR}/../antlr4-cpp-runtime-4.6-source/dist/libantlr4-runtime.a
+	${CMAKE_CURRENT_SOURCE_DIR}/../boost/boost_1_64_0/stage/lib/libboost_filesystem.a
+	${CMAKE_CURRENT_SOURCE_DIR}/../boost/boost_1_64_0/stage/lib/libboost_system.a
+	)
 
 install(TARGETS JWB
 		DESTINATION "share"
