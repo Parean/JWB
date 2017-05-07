@@ -35,7 +35,7 @@ class CustomListener : public JavaBaseListener
 		// Then, we remove it from vector to support the ability to access the current class or interface
 		void exitClassDeclaration(JavaParser::ClassDeclarationContext *ctx) override;
 		void exitInterfaceDeclaration(JavaParser::InterfaceDeclarationContext *ctx) override;
-		void exitEnumDeclaration(JavaParser::EnumDeclarationContext *ctx);
+		void exitEnumDeclaration(JavaParser::EnumDeclarationContext *ctx) override;
 
 		// In this two methods we increase independetPaths in current method if it's necessary
 		// Also enterStatement is used to increment numberSourceLinesOfCode

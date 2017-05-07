@@ -10,4 +10,4 @@ rm ./CMakeFiles/JWB.dir/metricsCalculator.o
 cp ./temp/depend.make ./CMakeFiles/JWB.dir/
 rm JWB
 make
-./JWB ../testExamples/mhfAndAhfTest.java
+./JWB ../testExamples/
