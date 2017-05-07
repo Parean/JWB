@@ -45,31 +45,48 @@ void InheritanceAndPolymorphismFactorVisitor::visit(TreeClassDescription const* 
 
 	for (auto const x : treeClassDescription->getMethods())
 	{
+		// If method is generic, things get messy.
 		if (x->getIsGeneric())
 		{
 			bool overridesGeneric = false;
-			// Can count newly added methods!!!!!
+			bool gotWide = false;
+			// Find if x can override one of generics.
 			for (auto y = genericMethods.crbegin(); y != genericMethods.crend() && !overridesGeneric; ++y)
 			{
 				overridesGeneric = methodComparison::compare(*x,*(y->first));
 				if (overridesGeneric && methodComparison::isWider(*x,*(y->first)))
 				{
-					genericMethods.push_back({x.get(),false});
-					stackOfAddedGenericMethods.back()++;
+					gotWide = true;
 				}
 			}
-			if (!overridesGeneric)
+			if (!gotWide)
 			{
-				stackOfAddedGenericMethods.back()++;
-				genericMethods.push_back({x.get(), true});
-				inheritedMethodsRealSize++;
-				result.totalMethodNumber++;
+				if (!overridesGeneric)
+				{
+					// Method is added and marks as a new one (inheritedMethodsRealSize is succed).
+					genericMethods.push_back({x.get(), true});
+					// Marks that method needs to be popped on the leave from the node.
+					stackOfAddedGenericMethods.back()++;
+					inheritedMethodsRealSize++;
+					result.totalMethodNumber++;
+				}
+				else
+				{
+					// Method is overriden.
+					possibleInheritanceNumber--;
+				}
 			}
+			// If method is wider (y may be reduced to x) then x is added to the end but inheritedMethodsRealSize is not succed.
+			// That is why if any one inherites y, it inherites its most common form - x.
 			else
 			{
+				// Add method to the end so it would be found earlier than its partial case.
+				// Mark with false that it does not increment inheritedMethodsRealSize.
+				genericMethods.push_back({x.get(),false});
+				// Marks that when leaving this node method must be popped from genericMethods.
+				stackOfAddedGenericMethods.back()++;
+				// If we found more common method, it means that it is "overriden".
 				possibleInheritanceNumber--;
-				inheritedMethodsRealSize++;
-				result.totalMethodNumber++;
 			}
 		}
 		else
@@ -79,12 +96,16 @@ void InheritanceAndPolymorphismFactorVisitor::visit(TreeClassDescription const* 
 			auto iter = inheritedMethods.find(x.get());
 			if (iter != inheritedMethods.cend())
 			{
+				// If found, increase number of appearences.
 				iter->second++;
+				// If found, it is overriten -> there is a method that cannot be inherited.
 				possibleInheritanceNumber--;
 			}
+			// Check if there is a generic method that we could override.
 			else if (x.get()->getName() != treeClassDescription->getName())
 			{
 				bool overridesGeneric = false;
+				// We d
 				for (auto y = genericMethods.crbegin(); y != genericMethods.crend() && !overridesGeneric; ++y)
 				{
 					overridesGeneric = methodComparison::compare(*x,*(y->first));
@@ -98,7 +119,6 @@ void InheritanceAndPolymorphismFactorVisitor::visit(TreeClassDescription const* 
 				else
 				{
 					possibleInheritanceNumber--;
-					inheritedMethodsRealSize++;
 				}
 			}
 		}

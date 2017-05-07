@@ -10,10 +10,6 @@ using std::vector;
 using std::move;
 using std::unordered_map;
 
-#include <iostream>
-using std::cout;
-using std::endl;
-
 namespace JWB {	namespace details {
 
 template <typename T>
@@ -58,6 +54,7 @@ void addParams(TreeMethodDescription* method, JavaParser::FormalParameterContext
 	if (ctx->typeType()->classOrInterfaceType())
 	{
 		auto addedType = ctx->typeType()->classOrInterfaceType()->getText();
+		
 		// Generic types are mapped into template "#n", where n is number of appearence type in generic type list.
 		if (genericTypes.count(addedType))
 		{
@@ -89,6 +86,8 @@ void addMethod(TreeClassDescription* treeClassDescription, JavaParser::ClassBody
 		else if (memberDeclaration->methodDeclaration()->typeType()->classOrInterfaceType())
 		{
 			returnType = memberDeclaration->methodDeclaration()->typeType()->classOrInterfaceType()->getText();
+
+			// We map generic type name to "#$NUMBER", where $NUMBER is number of this generic type in type list.
 			if (genericTypes.count(returnType))
 			{
 				returnType = {'#',(char)genericTypes.find(returnType)->second, 0};
@@ -183,6 +182,8 @@ void addAttribute(TreeClassDescription* treeClassDescription, JavaParser::ClassB
 		else if (memberDeclaration->fieldDeclaration()->typeType()->classOrInterfaceType())
 		{
 			type = memberDeclaration->fieldDeclaration()->typeType()->classOrInterfaceType()->getText();
+
+			// We map generic type name to "#$NUMBER", where $NUMBER is number of this generic type in type list.
 			if (genericTypes.count(type))
 			{
 				type = {'#',(char)genericTypes.find(type)->second, 0};
@@ -214,6 +215,8 @@ void inheritanceTreeConstructorListener::enterInterfaceDeclaration(JavaParser::I
 	string inheritorName(ctx->Identifier()->getText());
 
 	vector<string> parentNames;
+
+	// Map of generic name to number in typeLists.
 	unordered_map<string, size_t> genericTypes;
 
 	// Scanning list of generic types.
@@ -258,6 +261,8 @@ void inheritanceTreeConstructorListener::enterClassDeclaration(JavaParser::Class
 	string inheritorName(ctx->Identifier()->getText());
 
 	vector<string> parentNames;
+
+	// Map of generic name to number in typeLists.
 	unordered_map<string, size_t> genericTypes;
 
 	// Scanning list of generic types.

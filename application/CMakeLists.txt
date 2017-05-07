@@ -3,12 +3,12 @@ if(NOT UNIX)
  	message(FATAL "Unsupported operating system")
 endif()
 
-# set(CMAKE_C_COMPILER "gcc-5")
-# set(CMAKE_CXX_COMPILER "g++-5")
+cmake_minimum_required(VERSION 3.7)
+
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wpedantic -O0")
 
 set(JWB-GENERATED_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/antlr-for-java/JavaLexer.cpp

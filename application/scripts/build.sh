@@ -5,4 +5,4 @@ cmake ..
 mkdir temp
 cp ./CMakeFiles/JWB.dir/depend.make ./temp/depend.make
 make
-./JWB ../testExamples/mhfAndAhfTest.java
+./JWB ../testExamples/InheritanceFactorGenericTest.java

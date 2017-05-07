@@ -56,7 +56,7 @@ private:
 	};
 
 	std::unordered_map<TreeMethodDescription const*, size_t, hash_for_TreeMethodDescription, equal_to_for_TreeMethodDescription> inheritedMethods;
-	std::vector<std::pair<TreeMethodDescription const*,size_t>> genericMethods;
+	std::vector<std::pair<TreeMethodDescription const*,bool>> genericMethods;
 	std::vector<size_t> stackOfAddedGenericMethods;
 	size_t inheritedMethodsRealSize;
 	ReturnVisitorStatus<InheritanceAndPolymorphismFactorVisitor>& result;
