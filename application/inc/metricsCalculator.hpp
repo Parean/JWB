@@ -6,6 +6,7 @@
 #include "classDescription.hpp"
 #include "antlr4-runtime.h"
 #include "interfaceDescription.hpp"
+#include "antlrComponentsKeeper.hpp"
 
 namespace JWB {	namespace details {
 
@@ -21,7 +22,7 @@ class MetricsCalculator
 		MetricsCalculator& operator=(MetricsCalculator const&) = delete;
 		MetricsCalculator& operator=(MetricsCalculator&&) = delete;
 
-		MetricsCalculator(antlr4::CommonTokenStream *programTokens, antlr4::tree::ParseTree* tree);
+		MetricsCalculator(AntlrComponentsKeeper &keeper);
 
 		// Increment numberSourceLinesOfCode
 		void bumpNumberSourceLinesOfCode();
@@ -48,8 +49,8 @@ class MetricsCalculator
 		size_t getAverageCyclomaticComplexity() const;
 
 	private:
-		// Stream of tokens to count the comments
-		antlr4::CommonTokenStream *tokens;
+		// Vector of streams of tokens to count the comments
+		std::vector <antlr4::CommonTokenStream*> tokens;
 
 		size_t numberSourceLinesOfCode = 0;
 		std::vector <std::shared_ptr <const ClassDescription> > classes;

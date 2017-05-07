@@ -9,7 +9,8 @@ namespace JWB { namespace details {
 
 AttributeInheritanceFactorVisitor::AttributeInheritanceFactorVisitor(unordered_set<Node const*>& filter, ReturnVisitorStatus<AttributeInheritanceFactorVisitor>& returnStatus) :
 	Visitor(filter),
-	returnStatus(returnStatus)
+	returnStatus(returnStatus),
+	sumOfCurrentInheritedAttributes(0)
 	{}
 
 void AttributeInheritanceFactorVisitor::visit(TreeClassDescription const* treeClassDescription)

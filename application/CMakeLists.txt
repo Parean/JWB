@@ -3,9 +3,12 @@ if(NOT UNIX)
  	message(FATAL "Unsupported operating system")
 endif()
 
+cmake_minimum_required(VERSION 3.7)
+
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wpedantic -O0")
 
 set(JWB-GENERATED_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/antlr-for-java/JavaLexer.cpp
@@ -27,6 +30,7 @@ endforeach( src_file ${JWB-GENERATED_SRC} )
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/../antlr4-cpp-runtime-4.6-source/run/usr/local/include/antlr4-runtime
 	${CMAKE_CURRENT_SOURCE_DIR}/antlr-for-java
+	${CMAKE_CURRENT_SOURCE_DIR}/../boost/boost_1_64_0
 	${CMAKE_CURRENT_SOURCE_DIR}/inc
 	${CMAKE_CURRENT_SOURCE_DIR}/inc/treeDescriptions
 	${CMAKE_CURRENT_SOURCE_DIR}/inc/treeVisitors
@@ -34,7 +38,13 @@ include_directories(
 	)
 
 set(JWB_SRC
-	${CMAKE_CURRENT_SOURCE_DIR}/runSrc/main.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/antlrComponentsKeeper.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/metricsCalculator.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/customListener.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/classDescription.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/interfaceDescription.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/methodDescription.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeDescriptions/treeMethodDescription.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeDescriptions/treeAttributeDescription.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeDescriptions/treeInterfaceDescription.cpp
@@ -65,7 +75,11 @@ add_executable(JWB
 	${JWB_SRC}
 	)
 
-target_link_libraries(JWB  ${CMAKE_CURRENT_SOURCE_DIR}/../antlr4-cpp-runtime-4.6-source/dist/libantlr4-runtime.a)
+target_link_libraries(JWB
+	${CMAKE_CURRENT_SOURCE_DIR}/../antlr4-cpp-runtime-4.6-source/dist/libantlr4-runtime.a
+	${CMAKE_CURRENT_SOURCE_DIR}/../boost/boost_1_64_0/stage/lib/libboost_filesystem.a
+	${CMAKE_CURRENT_SOURCE_DIR}/../boost/boost_1_64_0/stage/lib/libboost_system.a
+	)
 
 install(TARGETS JWB
 		DESTINATION "share"

@@ -7,7 +7,7 @@ using std::endl;
 
 namespace JWB { namespace details {
 
-NumberOfChildrenVisitor::NumberOfChildrenVisitor(std::unordered_set<Node const*> filter, ReturnVisitorStatus<NumberOfChildrenVisitor>& returnStatus) :
+NumberOfChildrenVisitor::NumberOfChildrenVisitor(std::unordered_set<Node const*>& filter, ReturnVisitorStatus<NumberOfChildrenVisitor>& returnStatus) :
 	Visitor(filter),
 	returnStatus(returnStatus)
 	{}
