@@ -29,7 +29,7 @@ public:
 	std::string const& getReturnType() const;
 
 	/// Returns list of parameter types.
-	std::vector<std::string const> const& getParamTypes() const;
+	std::vector<std::string > const& getParamTypes() const;
 
 	/// Returns access modifier of current method in interface/class container.
 	AccessModifier getAccessModifier() const;
@@ -37,14 +37,14 @@ public:
 	/// Updates hash, used to distinguish methods by their signatures.
 	void updateId();
 
-	/// Returns set hash. 
+	/// Returns set hash.
 	// Should not be used, if there was not invokation of updateHash() between this and addParam(string).
 	size_t getId() const;
 
 private:
 	std::string const name;
 	std::string const returnType;
-	std::vector<std::string const> paramTypes;
+	std::vector<std::string > paramTypes;
 	AccessModifier const accessModifier;
 
 	size_t lazyHash;

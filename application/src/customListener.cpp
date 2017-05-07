@@ -56,7 +56,8 @@ void CustomListener::exitEnumDeclaration(JavaParser::EnumDeclarationContext *ctx
 
 void CustomListener::enterStatement(JavaParser::StatementContext *ctx)
 {
-	assert(!methodsForTraversal.empty());
+	if (methodsForTraversal.empty())
+		return;
 
 	if (!ctx->getTokens(JavaParser::IF).empty() || !ctx->getTokens(JavaParser::FOR).empty() || !ctx->getTokens(JavaParser::WHILE).empty() ||
 		!ctx->getTokens(JavaParser::DO).empty() || !ctx->getTokens(JavaParser::CATCH).empty())

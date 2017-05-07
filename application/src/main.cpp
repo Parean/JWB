@@ -1,26 +1,30 @@
 #include <iostream>
 
-#include "antlr4-runtime.h"
-#include "JavaLexer.h"
-#include "JavaParser.h"
+#include "antlrComponentsKeeper.hpp"
 #include "metricsCalculator.hpp"
-
+#include "treeMetricsCalculator.hpp"
 
 using std::cout;
-using std::ifstream;
 using std::endl;
+using std::vector;
 
-using namespace antlr4;
+int main(int argc, const char* argv[])
+{
+	if (argc < 2)
+	{
+	   cout << "You must specify the path to file or project directory" << endl;
+	   return 0;
+	}
 
-int main(int argc, const char* argv[]) {
-	ifstream stream;
-	stream.open(argv[1]);
-	ANTLRInputStream input(stream);
-	JavaLexer lexer(&input);
-	CommonTokenStream tokens(&lexer);
-	JavaParser parser(&tokens);
-	tree::ParseTree *tree = parser.compilationUnit();
-	JWB::details::MetricsCalculator metricsCalculator(&tokens, tree);
+	JWB::details::AntlrComponentsKeeper keeper(argv[1]);
+
+	if (keeper.getTrees().empty())
+	{
+		cout << "There is no files with .java extension in the given path" << endl;
+		return 0;
+	}
+
+	JWB::details::MetricsCalculator metricsCalculator(keeper);
 
 	metricsCalculator.showNumberOfMethods();
 	metricsCalculator.showNumberOfFields();

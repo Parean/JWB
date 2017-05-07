@@ -55,7 +55,7 @@ string const& TreeMethodDescription::getReturnType() const
 	return returnType;
 }
 
-vector<string const> const& TreeMethodDescription::getParamTypes() const
+vector<string> const& TreeMethodDescription::getParamTypes() const
 {
 	return paramTypes;
 }

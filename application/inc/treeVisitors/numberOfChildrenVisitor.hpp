@@ -26,7 +26,7 @@ public:
 	NumberOfChildrenVisitor& operator=(NumberOfChildrenVisitor const&) = delete;
 	NumberOfChildrenVisitor& operator=(NumberOfChildrenVisitor&&) = delete;
 
-	NumberOfChildrenVisitor(std::unordered_set<Node const*> filter, ReturnVisitorStatus<NumberOfChildrenVisitor>& returnStatus);
+	NumberOfChildrenVisitor(std::unordered_set<Node const*>& filter, ReturnVisitorStatus<NumberOfChildrenVisitor>& returnStatus);
 
 	/// Updates returnStatus.
 	void visit(TreeInterfaceDescription const* treeInterfaceDescription) override;
