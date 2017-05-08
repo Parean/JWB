@@ -37,19 +37,17 @@ public:
 
 	/// Takes lambda (from dfsFunctions) and applies them to roots
 	/// Takes lambdas that return void.
-	template <class... Args>
-	void lambdaDfs(std::function<void(Args...)> lambda) const
+	void lambdaDfs(std::function<void(Node const*)> lambda) const
 	{
 		lambda(pseudoRoot);
 	}
 
 	/// Takes lambda (from dfsFunctions) and applies them to roots
 	/// Takes lambdas that does not return void.
-	template <class returnValue, class... Args>
-	returnValue lambdaDfs(std::function<returnValue(Args...)> lambda) const
+	template <class returnValue>
+	returnValue lambdaDfs(std::function<returnValue(Node const*)> lambda) const
 	{
-		auto result = lambda(pseudoRoot);
-		return result;
+		return lambda(pseudoRoot);
 	}
 
 private:

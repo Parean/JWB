@@ -41,7 +41,7 @@ bool CurrentlyBuildingTree::isEmpty() const
 InheritanceTree CurrentlyBuildingTree::buildTree()
 {
 	// Nodes should not be empty when a tree is constructed. It's a bag.
-	assert(nodes.size());
+	assert(!nodes.empty());
 
 	// Nodes should be of the same size as the connections.
 	assert(nodes.size() == connections.size());

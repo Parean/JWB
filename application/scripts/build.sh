@@ -6,4 +6,3 @@ mkdir temp
 cp ./CMakeFiles/JWB.dir/depend.make ./temp/depend.make
 make
 ./JWB ../testExamples/InheritanceFactorGenericTest.java
-./JWB ../testExamples/

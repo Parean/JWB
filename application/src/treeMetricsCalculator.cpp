@@ -7,10 +7,15 @@
 #include "attributeInheritanceFactorVisitor.hpp"
 
 #include <exception>
+#include <boost/optional.hpp>
 
 using std::unordered_set;
 using std::vector;
 using std::move;
+
+#include <iostream>
+using std::cout;
+using std::endl;
 
 namespace JWB {	namespace details {
 
@@ -67,67 +72,115 @@ vector<Node const*> privateGetClassLists(InheritanceTree const& inheritanceTree)
 	return move(classLists);
 }
 
+struct TreeMetricsCalculator::ResultContainter
+{
+	ResultContainter() = default;
+	template <typename T>
+	using OptRes = typename boost::optional<ReturnVisitorStatus<T>>;
+
+	ReturnVisitorStatus<InheritanceAndPolymorphismFactorVisitor> const& getInheritanceAndPolymorphismFactorResult(vector<Node const*> const& classLists) const
+	{
+		if (!inheritanceAndPolymorphismFactorResult)
+			inheritanceAndPolymorphismFactorResult = countMetric<InheritanceAndPolymorphismFactorVisitor>(classLists);
+		return inheritanceAndPolymorphismFactorResult.value();
+	}
+
+	ReturnVisitorStatus<AttributeInheritanceFactorVisitor> const& getAttributeInheritanceFactorResult(vector<Node const*> const& classLists) const
+	{
+		if (!attributeInheritanceFactorResult)
+			attributeInheritanceFactorResult = countMetric<AttributeInheritanceFactorVisitor>(classLists);
+		return attributeInheritanceFactorResult.value();
+	}
+
+	ReturnVisitorStatus<NumberOfChildrenVisitor> const& getNumberOfChildrenResult(vector<Node const*> const& classLists) const
+	{
+		if (!numberOfChildrenResult)
+			numberOfChildrenResult = countMetric<NumberOfChildrenVisitor>(classLists);
+		return numberOfChildrenResult.value();
+	}
+
+	graphSearchFunctions::DepthCount const& getDepthResult(InheritanceTree const& inheritanceTree) const
+	{
+		if (!depthResult)
+			depthResult = move(inheritanceTree.lambdaDfs(graphSearchFunctions::depthCounter()));
+		return depthResult.value();
+	}
+
+	graphSearchFunctions::WidthCount const& getWidthResult(InheritanceTree const& inheritanceTree) const
+	{
+		if (!widthResult)
+			widthResult = move(inheritanceTree.lambdaDfs(graphSearchFunctions::widthCounter()));
+		return widthResult.value();
+	}
+
+	
+private:
+
+	template <typename T>
+	OptRes<T> static countMetric(vector<Node const*> const& classLists)
+	{
+		ReturnVisitorStatus<T> result;
+		unordered_set<Node const*> filter;
+		T visitor(filter, result);
+		for (auto const* x : classLists)
+		{
+			takeVisitorDown(&visitor, x);
+		}
+		return move(result);
+	}
+
+	OptRes<InheritanceAndPolymorphismFactorVisitor> mutable inheritanceAndPolymorphismFactorResult;
+	OptRes<AttributeInheritanceFactorVisitor> mutable attributeInheritanceFactorResult;
+	OptRes<NumberOfChildrenVisitor> mutable numberOfChildrenResult;
+	boost::optional<graphSearchFunctions::DepthCount> mutable depthResult;
+	boost::optional<graphSearchFunctions::WidthCount> mutable widthResult;
+};
+
 TreeMetricsCalculator::TreeMetricsCalculator(AntlrComponentsKeeper &keeper) :
 	inheritanceTree(treeConstruction::constructInheritanceTree(keeper)),
+	results(new ResultContainter()),
 	classLists(privateGetClassLists(inheritanceTree))
 {}
 
 double TreeMetricsCalculator::getMethodInheritanceHidingFactor() const
 {
-	ReturnVisitorStatus<InheritanceAndPolymorphismFactorVisitor> result;
-	unordered_set<Node const*> filter;
-	InheritanceAndPolymorphismFactorVisitor visitor(filter, result);
-	for (auto const* x : classLists)
-	{
-		takeVisitorDown(&visitor, x);
-	}
+	assert(results);
+	auto const& result = results->getInheritanceAndPolymorphismFactorResult(classLists);
 	return result.totalMethodNumber ? (double)result.inheritedMethodNumber / result.totalMethodNumber : 0;
 }
 
 double TreeMetricsCalculator::getAttributeInheritanceHidingFactor() const
 {
-	ReturnVisitorStatus<AttributeInheritanceFactorVisitor> result;
-	unordered_set<Node const*> filter;
-	AttributeInheritanceFactorVisitor visitor(filter, result);
-	for (auto const* x : classLists)
-	{
-		takeVisitorDown(&visitor, x);
-	}
+	assert(results);
+	auto const& result = results->getAttributeInheritanceFactorResult(classLists);
 	return result.totalAttributeNumber ? (double)result.inheritedAttributeNumber / result.totalAttributeNumber : 0;
 }
 
 double TreeMetricsCalculator::getPolymorpismFactor() const
 {
-	ReturnVisitorStatus<InheritanceAndPolymorphismFactorVisitor> result;
-	unordered_set<Node const*> filter;
-	InheritanceAndPolymorphismFactorVisitor visitor(filter, result);
-	for (auto const* x : classLists)
-	{
-		takeVisitorDown(&visitor, x);
-	}
+	assert(results);
+	auto const& result = results->getInheritanceAndPolymorphismFactorResult(classLists);
 	return result.totalMethodNumber ? (double)result.overridenMethodNumber / result.totalMethodNumber : 0;
 }
 
 double TreeMetricsCalculator::getNumberOfChildrenMetric() const
 {
-	ReturnVisitorStatus<NumberOfChildrenVisitor> result;
-	unordered_set<Node const*> filter;
-	NumberOfChildrenVisitor visitor(filter, result);
-	for (auto const* x : classLists)
-	{
-		takeVisitorDown(&visitor, x);
-	}
+	assert(results);
+	auto const& result = results->getNumberOfChildrenResult(classLists);
 	return result.numberOfInterfacesThatHaveChildren ? (double)result.sumOfChildren / result.numberOfInterfacesThatHaveChildren : 0;
 }
 
 size_t TreeMetricsCalculator::getDepthOfInheritanceTree() const
 {
-	return inheritanceTree.lambdaDfs(graphSearchFunctions::depthCounter()) - 1;
+	// -1 as inheritance tree has pseudo-root.
+	assert(results);
+	return results->getDepthResult(inheritanceTree).getDepth() - 1;
 }
 
 size_t TreeMetricsCalculator::getWidthOfInheritanceTree() const
 {
-	return inheritanceTree.lambdaDfs(graphSearchFunctions::widthCounter());
+	assert(results);
+	return results->getWidthResult(inheritanceTree).getWidth();
 }
 
 void TreeMetricsCalculator::printInheritanceTree() const

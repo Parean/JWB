@@ -5,6 +5,7 @@
 #include "antlrComponentsKeeper.hpp"
 
 #include <vector>
+#include <memory>
 
 namespace JWB {	namespace details {
 
@@ -35,6 +36,9 @@ public:
 
 private:
 	InheritanceTree inheritanceTree;
+
+	struct ResultContainter;
+	std::shared_ptr<ResultContainter> results;
 
 	std::vector<Node const*> classLists;
 
