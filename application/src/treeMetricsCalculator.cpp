@@ -21,20 +21,20 @@ using std::accumulate;
 using std::abs;
 using std::remove_if;
 
-#include <iostream>
-using std::cout;
-using std::endl;
-
 namespace JWB {	namespace details {
 
 class ClassListsVisitor;
 
+/// @class ReturnVisitorStatus<ClassListsVisitor>
+/// @brief Used by ClassListsVisitor to contain classes that do not have parents (while visiting is not in valid state).
 template <>
 struct ReturnVisitorStatus<ClassListsVisitor>
 {
 	unordered_set<Node const*> classLists;
 };
 
+/// @class ClassListsVisitor
+/// @brief Additional visitor that gets all the classes that do not have parents in the inheritance tree.
 class ClassListsVisitor : public Visitor
 {
 public:
@@ -68,51 +68,65 @@ private:
 	ReturnVisitorStatus<ClassListsVisitor>& result;
 };
 
+// Gets classes without parents from inheritance tree. Here classes are classes only.
 vector<Node const*> privateGetClassLists(InheritanceTree const& inheritanceTree)
 {
 	auto result = inheritanceTree.dfsDown<ClassListsVisitor>();
 	vector<Node const*> classLists(result.classLists.size());
 	copy(result.classLists.begin(), result.classLists.end(), classLists.begin());
 	// It is worth mentioning, that classLists does not have any order due to result.classLists is an unorder_map.
-	sort(classLists.begin(), classLists.end(), [](Node const* x, Node const* y) { return x->getInterface()->getName() < y->getInterface()->getName(); } );
+	sort(classLists.begin(), 
+		classLists.end(), 
+		[](Node const* x, Node const* y) 
+		{ return x->getInterface()->getName() < y->getInterface()->getName(); } );
 	return move(classLists);
 }
 
-struct TreeMetricsCalculator::ResultContainter
+/// @class ResultContainter
+/// @brief Additional structure for lazy storage of metrics results.
+class TreeMetricsCalculator::ResultContainter
 {
+public:
 	ResultContainter() = default;
+
+	// Alias for composition of boost::optional and ReturnVisitorStatus.
 	template <typename T>
 	using OptRes = typename boost::optional<ReturnVisitorStatus<T>>;
 
-	ReturnVisitorStatus<InheritanceAndPolymorphismFactorVisitor> const& getInheritanceAndPolymorphismFactorResult(vector<Node const*> const& classLists) const
+	// The following methods return metrics results and counts them, if necessary.
+
+	// auto = ReturnVisitorStatus<InheritanceAndPolymorphismFactorVisitor>, others have other template param.
+	auto const& getInheritanceAndPolymorphismFactorResult(vector<Node const*> const& classLists) const
 	{
 		if (!inheritanceAndPolymorphismFactorResult)
 			inheritanceAndPolymorphismFactorResult = countMetric<InheritanceAndPolymorphismFactorVisitor>(classLists);
 		return inheritanceAndPolymorphismFactorResult.value();
 	}
 
-	ReturnVisitorStatus<AttributeInheritanceFactorVisitor> const& getAttributeInheritanceFactorResult(vector<Node const*> const& classLists) const
+	auto const& getAttributeInheritanceFactorResult(vector<Node const*> const& classLists) const
 	{
 		if (!attributeInheritanceFactorResult)
 			attributeInheritanceFactorResult = countMetric<AttributeInheritanceFactorVisitor>(classLists);
 		return attributeInheritanceFactorResult.value();
 	}
 
-	ReturnVisitorStatus<NumberOfChildrenVisitor> const& getNumberOfChildrenResult(vector<Node const*> const& classLists) const
+	auto const& getNumberOfChildrenResult(vector<Node const*> const& classLists) const
 	{
 		if (!numberOfChildrenResult)
 			numberOfChildrenResult = countMetric<NumberOfChildrenVisitor>(classLists);
 		return numberOfChildrenResult.value();
 	}
 
-	ReturnVisitorStatus<ClassNamesVisitor> const& getClassNamesResult(vector<Node const*> const& classLists) const
+	// Gets only classes names.
+	auto const& getClassNamesResult(vector<Node const*> const& classLists) const
 	{
 		if (!classNamesResult)
 			classNamesResult = countMetric<ClassNamesVisitor>(classLists);
 		return classNamesResult.value();
 	}
 
-	ReturnVisitorStatus<ClassNamesVisitor> const& getClassNamesResult(InheritanceTree const& inheritanceTree) const
+	// Gets both classes and iterfaces names.
+	auto const& getClassNamesResult(InheritanceTree const& inheritanceTree) const
 	{
 		if (!intarfacesAndClassNamesResult)
 			intarfacesAndClassNamesResult = countMetric<ClassNamesVisitor>(inheritanceTree);
@@ -169,6 +183,9 @@ TreeMetricsCalculator::TreeMetricsCalculator(AntlrComponentsKeeper &keeper) :
 	classLists(privateGetClassLists(inheritanceTree))
 {}
 
+// Gets vectors and zips those elements, that value from analiticsVector differs less than a half from average.
+// Obtained vector is set as first element of the pair.
+// Average is returned as second element of the pair.
 template <typename T, typename U>
 TreeMetricsCalculator::analitics<T, U>  scan(
 	vector<string> const& classNames,
@@ -191,6 +208,9 @@ TreeMetricsCalculator::analitics<T, U>  scan(
 	return move(result);
 }
 
+// Gets vectors and zips them.
+// Obtained vector is set as first element of the pair.
+// Average is returned as second element of the pair.
 template <typename T, typename U>
 TreeMetricsCalculator::analitics<T, U> totalAnalyzis(
 	vector<string> const& classNames,
@@ -208,17 +228,26 @@ TreeMetricsCalculator::analitics<T, U> totalAnalyzis(
 	return move(result);
 }
 
+// Gets mean value from given vector.
 template <typename T>
 double meanValue(vector<T> const& v)
 {
+	assert(!v.empty());
 	return (double)accumulate(v.begin(), v.end(), 0) / v.size();
+}
+
+// If second argument is 0, return 0. Otherwise divides elements.
+template <typename T, typename U>
+double safeDivide(T x, U y)
+{
+	return y ? (double)x / y : 0;
 }
 
 double TreeMetricsCalculator::getMethodInheritanceHidingFactor() const
 {
 	assert(results);
 	auto const& result = results->getInheritanceAndPolymorphismFactorResult(classLists);
-	return result.totalMethodNumber ? (double)result.inheritedMethodNumber / result.totalMethodNumber : 0;
+	return safeDivide(result.inheritedMethodNumber, result.totalMethodNumber);
 }
 
 TreeMetricsCalculator::analitics<int64_t, double> TreeMetricsCalculator::scanMethodInheritanceHidingFactor() const
@@ -239,7 +268,7 @@ double TreeMetricsCalculator::getAttributeInheritanceHidingFactor() const
 {
 	assert(results);
 	auto const& result = results->getAttributeInheritanceFactorResult(classLists);
-	return result.totalAttributeNumber ? (double)result.inheritedAttributeNumber / result.totalAttributeNumber : 0;
+	return safeDivide(result.inheritedAttributeNumber, result.totalAttributeNumber);
 }
 
 TreeMetricsCalculator::analitics<uint64_t, double> TreeMetricsCalculator::scanAttributeInheritanceHidingFactor() const
@@ -260,7 +289,7 @@ double TreeMetricsCalculator::getPolymorpismFactor() const
 {
 	assert(results);
 	auto const& result = results->getInheritanceAndPolymorphismFactorResult(classLists);
-	return result.totalMethodNumber ? (double)result.overridenMethodNumber / result.totalMethodNumber : 0;
+	return safeDivide(result.overridenMethodNumber, result.totalMethodNumber);
 }
 
 TreeMetricsCalculator::analitics<int64_t, double> TreeMetricsCalculator::scanPolymorpismFactor() const
@@ -281,7 +310,7 @@ double TreeMetricsCalculator::getNumberOfChildrenMetric() const
 {
 	assert(results);
 	auto const& result = results->getNumberOfChildrenResult(classLists);
-	return result.numberOfInterfacesThatHaveChildren ? (double)result.sumOfChildren / result.numberOfInterfacesThatHaveChildren : 0;
+	return safeDivide(result.sumOfChildren, result.numberOfInterfacesThatHaveChildren);
 }
 
 TreeMetricsCalculator::analitics<uint64_t, double> TreeMetricsCalculator::scanNumberOfChildrenMetric() const
@@ -290,7 +319,8 @@ TreeMetricsCalculator::analitics<uint64_t, double> TreeMetricsCalculator::scanNu
 					results->getNumberOfChildrenResult(classLists).numberOfChildrenOfEveryClass,
 					getNumberOfChildrenMetric()));
 	auto& resultV = result.first;
-	resultV.erase(remove_if(resultV.begin(), resultV.end(), [](pair<string,uint64_t> const& p) ->bool { return !p.second; }), resultV.end());
+	resultV.erase(remove_if(resultV.begin(), resultV.end(), 
+				[](pair<string,uint64_t> const& p) ->bool { return !p.second; }), resultV.end());
 	return move(result);
 }
 

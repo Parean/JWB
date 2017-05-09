@@ -29,31 +29,43 @@ public:
 
 	TreeMetricsCalculator(AntlrComponentsKeeper& keeper);
 
+	// Note. By saying classes we also mean interfaces, if given metrics makes sence in that context.
+	// getFactor of getMetric - practicly everywhere means getting mean value by the metric.
+	// scanFactor/scanMetric - returns analitics of classes, that differ more than a half from mean value by the metric.
+	// totalAnalyzis returns all classes paired with value by the metric.
+
+	// Ratio of the number of inherited methods to total number of methods.
 	double getMethodInheritanceHidingFactor() const;
 	analitics<int64_t, double> scanMethodInheritanceHidingFactor() const;
 	analitics<int64_t, double> totalAnalyzisMethodInheritanceHidingFactor() const;
 
+	// Ratio of the number of inherited attributes to total number of attributes.
 	double getAttributeInheritanceHidingFactor() const;
 	analitics<uint64_t, double> scanAttributeInheritanceHidingFactor() const;
 	analitics<uint64_t, double> totalAnalyzisAttributeInheritanceHidingFactor() const;
 
+	// Ratio of the number of overridden methods to total number of methods.
 	double getPolymorpismFactor() const;
 	analitics<int64_t, double> scanPolymorpismFactor() const;
 	analitics<int64_t, double> totalAnalyzisPolymorpismFactor() const;
 
 	// Average number of children that classes, that do have children, have.
+	// Classes that do not have children are extracted from scan.
 	double getNumberOfChildrenMetric() const;
 	analitics<uint64_t, double> scanNumberOfChildrenMetric() const;
 	analitics<uint64_t, double> totalAnalyzisNumberOfChildrenMetric() const;
 
+	// Maximum (!) depth of Inheritance tree. Average value is given in analitics.
 	size_t getDepthOfInheritanceTree() const;
 	analitics<uint64_t, double> scanDepthOfInheritanceTree() const;
 	analitics<uint64_t, double> totalAnalyzisDepthOfInheritanceTree() const;
 
+	// Maximum (!) width of Inheritance tree. Average value is given in analitics.
 	size_t getWidthOfInheritanceTree() const;
 	analitics<uint64_t, double> scanWidthOfInheritanceTree() const;
 	analitics<uint64_t, double> totalAnalyzisWidthOfInheritanceTree() const;
 
+	// Prints tree in dfs order.
 	void printInheritanceTree() const;
 
 private:

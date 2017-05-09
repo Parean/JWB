@@ -27,7 +27,7 @@ private:
 	friend std::function<DepthCount(Node const*)> depthCounter();
 
 	std::vector<uint64_t> depthOfEachClass; // given in dfs order.
-	boost::optional<size_t> mutable depth; // As there must be at list one node in tree, we use depth == 0 to know that it was not counted.
+	boost::optional<size_t> mutable depth; // As there must be at least one node in tree, we use depth == 0 to know that it was not counted.
 };
 
 /// Used to count depth of the inheritance dag.
@@ -49,7 +49,7 @@ private:
 	friend std::function<WidthCount(Node const*)> widthCounter();
 
 	std::vector<uint64_t> widthOfEachClass; // given in bfs order.
-	boost::optional<size_t> mutable width; // As there must be at list one node in tree, we use depth == 0 to know that it was not counted.
+	boost::optional<size_t> mutable width; // As there must be at least one node in tree, we use depth == 0 to know that it was not counted.
 };
 
 /// Used to count width of the inheritance dag.

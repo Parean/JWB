@@ -189,7 +189,7 @@ bool TreeMethodDescription::operator==(TreeMethodDescription const& method) cons
 		// Graph consistes of verxes - parameters in method signature
 		// and connections, if types of parameters (in the same method) are the same.
 		// There is also connection between parameters with the same number in the other method, but it is implicit.
-		// There are imlicit connections two parameters of the another method, if types are equal and they are not generic.
+		// There are implicit connections two parameters of the another method, if types are equal and they are not generic.
 		unordered_map<string, vector<size_t>> firstMethodTypesNodes;
 		firstMethodTypesNodes.reserve(getParamTypes().size() + 1);
 		unordered_map<string, vector<size_t>> secondMethodTypesNodes;

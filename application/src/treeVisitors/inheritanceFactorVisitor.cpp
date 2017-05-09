@@ -73,7 +73,7 @@ void InheritanceAndPolymorphismFactorVisitor::visit(TreeClassDescription const* 
 				}
 				else
 				{
-					// Method is overriden.
+					// Method is overridden.
 					possibleInheritanceNumber--;
 				}
 			}
@@ -86,27 +86,26 @@ void InheritanceAndPolymorphismFactorVisitor::visit(TreeClassDescription const* 
 				genericMethods.push_back({x.get(),false});
 				// Marks that when leaving this node method must be popped from genericMethods.
 				stackOfAddedGenericMethods.back()++;
-				// If we found more common method, it means that it is "overriden".
+				// If we found more common method, it means that it is "overridden".
 				possibleInheritanceNumber--;
 			}
 		}
 		else
 		{
-			// If method is in inheritedMethods, then it is overriden and not inherited. 
+			// If method is in inheritedMethods, then it is overridden and not inherited. 
 			// If it is not private, it can be inherited.
 			auto iter = inheritedMethods.find(x.get());
 			if (iter != inheritedMethods.cend())
 			{
 				// If found, increase number of appearences.
 				iter->second++;
-				// If found, it is overriten -> there is a method that cannot be inherited.
+				// If found, it is overridden -> there is a method that cannot be inherited.
 				possibleInheritanceNumber--;
 			}
 			// Check if there is a generic method that we could override.
 			else if (x.get()->getName() != treeClassDescription->getName())
 			{
 				bool overridesGeneric = false;
-				// We d
 				for (auto y = genericMethods.crbegin(); y != genericMethods.crend() && !overridesGeneric; ++y)
 				{
 					overridesGeneric = methodComparison::compare(*x,*(y->first));

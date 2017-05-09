@@ -68,13 +68,13 @@ function<DepthCount(Node const*)> depthCounter()
 				return depth.at(node);
 			}
 			size_t result = 1;
-			size_t i = resultForOuter.depthOfEachClass.size();
+			size_t depthSize = resultForOuter.depthOfEachClass.size();
 			resultForOuter.depthOfEachClass.push_back(0);
 			for (auto const* x : node->getInheritors())
 			{
 				result = std::max(result, 1 + dfs(x));
 			}
-			resultForOuter.depthOfEachClass[i] = result;
+			resultForOuter.depthOfEachClass[depthSize] = result;
 			return depth[node] = result;
 		};
 		dfs(node);
