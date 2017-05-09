@@ -40,7 +40,7 @@ function<void(Node const*)> printer()
 	return dfs;
 }
 
-std::vector<size_t> const& DepthCount::getDepthOfEachClass() const
+std::vector<uint64_t> const& DepthCount::getDepthOfEachClass() const
 {
 	assert(!depthOfEachClass.empty());
 	return depthOfEachClass;
@@ -83,7 +83,7 @@ function<DepthCount(Node const*)> depthCounter()
 	return returnedLambda;
 }
 
-std::vector<size_t> const& WidthCount::getWidthOfEachClass() const
+std::vector<uint64_t> const& WidthCount::getWidthOfEachClass() const
 {
 	assert(!widthOfEachClass.empty());
 	return widthOfEachClass;

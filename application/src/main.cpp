@@ -41,10 +41,32 @@ int main(int argc, const char* argv[])
 	// cout << endl << "Average cyclomatic complexity for all classes: " << metricsCalculator.getAverageCyclomaticComplexity() << endl;
 	
 	cout << "Method Inheritance Hiding Factor is " << treeMetricsCalculator.getMethodInheritanceHidingFactor() << endl;
-	cout << "Attribute Inheritance Hiding Factor is " <<treeMetricsCalculator.getAttributeInheritanceHidingFactor() << endl;
-	cout << "Polymorpism Factor is " <<treeMetricsCalculator.getPolymorpismFactor() << endl;
-	cout << "Depth of Inheritance tree is " <<treeMetricsCalculator.getDepthOfInheritanceTree() << endl;
-	cout << "Width of Inheritance tree is " <<treeMetricsCalculator.getWidthOfInheritanceTree() << endl;
-	cout << "Average number of children is " <<treeMetricsCalculator.getNumberOfChildrenMetric() << endl;
+	cout << "Attribute Inheritance Hiding Factor is " << treeMetricsCalculator.getAttributeInheritanceHidingFactor() << endl;
+	cout << "Polymorpism Factor is " << treeMetricsCalculator.getPolymorpismFactor() << endl;
+	cout << "Depth of Inheritance tree is " << treeMetricsCalculator.getDepthOfInheritanceTree() << endl;
+	cout << "Width of Inheritance tree is " << treeMetricsCalculator.getWidthOfInheritanceTree() << endl;
+	cout << "Average number of children is " << treeMetricsCalculator.getNumberOfChildrenMetric() << endl;
+
+	auto p = treeMetricsCalculator.scanMethodInheritanceHidingFactor();
+	cout << "Scanning for not satishfying classes MIHF. Average is " << p.second << endl;
+	cout << "Not satishfying number is " << p.first.size() << endl;
+	cout << "Not satishfying number is " << treeMetricsCalculator.totalAnalyzisMethodInheritanceHidingFactor().first.size() << endl;
+	cout << treeMetricsCalculator.scanAttributeInheritanceHidingFactor().first.size() << endl;
+	cout << treeMetricsCalculator.totalAnalyzisAttributeInheritanceHidingFactor().first.size() << endl;
+	cout << treeMetricsCalculator.scanPolymorpismFactor().first.size() << endl;
+	cout << treeMetricsCalculator.totalAnalyzisPolymorpismFactor().first.size() << endl;
+	cout << treeMetricsCalculator.scanNumberOfChildrenMetric().first.size() << endl;
+	cout << treeMetricsCalculator.totalAnalyzisNumberOfChildrenMetric().first.size() << endl;
+
+	cout << treeMetricsCalculator.scanDepthOfInheritanceTree().second << endl;
+	cout << treeMetricsCalculator.scanDepthOfInheritanceTree().first.size() << endl;
+	cout << treeMetricsCalculator.totalAnalyzisDepthOfInheritanceTree().first.size() << endl;
+	cout << treeMetricsCalculator.scanWidthOfInheritanceTree().second << endl;
+	cout << treeMetricsCalculator.scanWidthOfInheritanceTree().first.size() << endl;
+	cout << treeMetricsCalculator.totalAnalyzisWidthOfInheritanceTree().first.size() << endl;
+	// for (auto const& x : p.first)
+	// {
+	// 	cout << "\t" << x.first << " " << x.second << endl;
+	// }
 	// treeMetricsCalculator.printInheritanceTree();
 }

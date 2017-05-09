@@ -15,6 +15,7 @@ struct ReturnVisitorStatus<AttributeInheritanceFactorVisitor>
 {
 	uint64_t inheritedAttributeNumber = 0;
 	uint64_t totalAttributeNumber = 0;
+	std::vector<uint64_t> inheritedAttributeOfEveryClass;
 };
 
 

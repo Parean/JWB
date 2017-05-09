@@ -16,6 +16,7 @@ void NumberOfChildrenVisitor::updateResult()
 		returnStatus.sumOfChildren += node->getInheritors().size();
 		returnStatus.numberOfInterfacesThatHaveChildren++;
 	}
+	returnStatus.numberOfChildrenOfEveryClass.push_back(node->getInheritors().size());
 }
 
 void NumberOfChildrenVisitor::visit(TreeInterfaceDescription const* treeInterfaceDescription)

@@ -17,6 +17,9 @@ struct ReturnVisitorStatus<InheritanceAndPolymorphismFactorVisitor>
 	uint64_t totalMethodNumber = 0;
 	uint64_t inheritedMethodNumber = 0;
 	int64_t overridenMethodNumber = 0;
+
+	std::vector<int64_t> inheritedMethodOfEveryClass;
+	std::vector<int64_t> overridenMethodOfEveryClass;
 };
 
 /// @class InheritanceAndPolymorphismFactorVisitor

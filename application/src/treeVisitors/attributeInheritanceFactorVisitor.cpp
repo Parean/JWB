@@ -17,6 +17,7 @@ void AttributeInheritanceFactorVisitor::visit(TreeClassDescription const* treeCl
 {
 	stackOfNumbersOfInheritedAttributes.push_back(treeClassDescription->getAttributes().size());
 	returnStatus.inheritedAttributeNumber += sumOfCurrentInheritedAttributes;
+	returnStatus.inheritedAttributeOfEveryClass.push_back(sumOfCurrentInheritedAttributes);
 	returnStatus.totalAttributeNumber += stackOfNumbersOfInheritedAttributes.back();
 	sumOfCurrentInheritedAttributes += stackOfNumbersOfInheritedAttributes.back();
 }

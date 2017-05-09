@@ -20,13 +20,13 @@ public:
 	DepthCount& operator=(DepthCount const&) = delete;
 	DepthCount& operator=(DepthCount&&) = default;
 
-	std::vector<size_t> const& getDepthOfEachClass() const;
+	std::vector<uint64_t> const& getDepthOfEachClass() const;
 	size_t getDepth() const;
 
 private:
 	friend std::function<DepthCount(Node const*)> depthCounter();
 
-	std::vector<size_t> depthOfEachClass; // given in dfs order.
+	std::vector<uint64_t> depthOfEachClass; // given in dfs order.
 	boost::optional<size_t> mutable depth; // As there must be at list one node in tree, we use depth == 0 to know that it was not counted.
 };
 
@@ -42,13 +42,13 @@ public:
 	WidthCount& operator=(WidthCount const&) = delete;
 	WidthCount& operator=(WidthCount&&) = default;
 
-	std::vector<size_t> const& getWidthOfEachClass() const;
+	std::vector<uint64_t> const& getWidthOfEachClass() const;
 	size_t getWidth() const;
 
 private:
 	friend std::function<WidthCount(Node const*)> widthCounter();
 
-	std::vector<size_t> widthOfEachClass; // given in bfs order.
+	std::vector<uint64_t> widthOfEachClass; // given in bfs order.
 	boost::optional<size_t> mutable width; // As there must be at list one node in tree, we use depth == 0 to know that it was not counted.
 };
 

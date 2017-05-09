@@ -41,6 +41,7 @@ void InheritanceAndPolymorphismFactorVisitor::visit(TreeClassDescription const* 
 	int64_t possibleInheritanceNumber = inheritedMethodsRealSize;
 
 	result.overridenMethodNumber += possibleInheritanceNumber;
+	result.overridenMethodOfEveryClass.push_back(possibleInheritanceNumber);
 	stackOfAddedGenericMethods.emplace_back();
 
 	for (auto const x : treeClassDescription->getMethods())
@@ -123,6 +124,8 @@ void InheritanceAndPolymorphismFactorVisitor::visit(TreeClassDescription const* 
 			}
 		}
 	}
+	result.inheritedMethodOfEveryClass.push_back(possibleInheritanceNumber);
+	result.overridenMethodOfEveryClass.back() -= possibleInheritanceNumber;
 	result.inheritedMethodNumber += possibleInheritanceNumber;
 	result.overridenMethodNumber -= possibleInheritanceNumber;
 }

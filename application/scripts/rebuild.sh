@@ -6,4 +6,5 @@ rm ./CMakeFiles/JWB.dir/CXX.includecache
 cp ./temp/depend.make ./CMakeFiles/JWB.dir/
 rm JWB
 make
-./JWB ../testExamples/InheritanceFactorGenericTest.java
+# ./JWB ../testExamples/InheritanceFactorGenericTest.java
+./JWB /Users/bzik/Documents/antlr4
