@@ -64,7 +64,7 @@ public:
 	/// Updates hash, used to distinguish methods by their signatures.
 	void updateId();
 
-	/// Returns set hash. 
+	/// Returns set hash.
 	// Should not be used, if there was not invokation of updateHash() between this and addParam(string).
 	size_t getId() const;
 

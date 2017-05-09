@@ -2,9 +2,8 @@
 rm ./CMakeFiles/JWB.dir/depend.make
 rm ./CMakeFiles/JWB.dir/depend.internal
 rm ./CMakeFiles/JWB.dir/CXX.includecache
-# rm -r ./CMakeFiles/JWB.dir/src/*.o
+rm ./CMakeFiles/JWB.dir/*.o
 cp ./temp/depend.make ./CMakeFiles/JWB.dir/
 rm JWB
 make
-# ./JWB ../testExamples/InheritanceFactorGenericTest.java
-./JWB /Users/bzik/Documents/antlr4
+./JWB ../testExamples/
