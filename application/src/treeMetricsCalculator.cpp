@@ -243,46 +243,46 @@ double safeDivide(T x, U y)
 	return y ? (double)x / y : 0;
 }
 
-double TreeMetricsCalculator::getMethodInheritanceHidingFactor() const
+double TreeMetricsCalculator::getMethodInheritanceFactor() const
 {
 	assert(results);
 	auto const& result = results->getInheritanceAndPolymorphismFactorResult(classLists);
 	return safeDivide(result.inheritedMethodNumber, result.totalMethodNumber);
 }
 
-TreeMetricsCalculator::analitics<int64_t, double> TreeMetricsCalculator::scanMethodInheritanceHidingFactor() const
+TreeMetricsCalculator::analitics<int64_t, double> TreeMetricsCalculator::scanMethodInheritanceFactor() const
 {
 	return move(scan(results->getClassNamesResult(classLists).namesList, 
 					results->getInheritanceAndPolymorphismFactorResult(classLists).inheritedMethodOfEveryClass,
-					getMethodInheritanceHidingFactor()));
+					getMethodInheritanceFactor()));
 }
 
-TreeMetricsCalculator::analitics<int64_t, double> TreeMetricsCalculator::totalAnalyzisMethodInheritanceHidingFactor() const
+TreeMetricsCalculator::analitics<int64_t, double> TreeMetricsCalculator::totalAnalyzisMethodInheritanceFactor() const
 {
 	return move(totalAnalyzis(results->getClassNamesResult(classLists).namesList, 
 							results->getInheritanceAndPolymorphismFactorResult(classLists).inheritedMethodOfEveryClass,
-							getMethodInheritanceHidingFactor()));
+							getMethodInheritanceFactor()));
 }
 
-double TreeMetricsCalculator::getAttributeInheritanceHidingFactor() const
+double TreeMetricsCalculator::getAttributeInheritanceFactor() const
 {
 	assert(results);
 	auto const& result = results->getAttributeInheritanceFactorResult(classLists);
 	return safeDivide(result.inheritedAttributeNumber, result.totalAttributeNumber);
 }
 
-TreeMetricsCalculator::analitics<uint64_t, double> TreeMetricsCalculator::scanAttributeInheritanceHidingFactor() const
+TreeMetricsCalculator::analitics<uint64_t, double> TreeMetricsCalculator::scanAttributeInheritanceFactor() const
 {
 	return move(scan(results->getClassNamesResult(classLists).namesList, 
 					results->getAttributeInheritanceFactorResult(classLists).inheritedAttributeOfEveryClass,
-					getAttributeInheritanceHidingFactor()));
+					getAttributeInheritanceFactor()));
 }
 
-TreeMetricsCalculator::analitics<uint64_t, double> TreeMetricsCalculator::totalAnalyzisAttributeInheritanceHidingFactor() const
+TreeMetricsCalculator::analitics<uint64_t, double> TreeMetricsCalculator::totalAnalyzisAttributeInheritanceFactor() const
 {
 	return move(totalAnalyzis(results->getClassNamesResult(classLists).namesList, 
 							results->getAttributeInheritanceFactorResult(classLists).inheritedAttributeOfEveryClass,
-							getAttributeInheritanceHidingFactor()));
+							getAttributeInheritanceFactor()));
 }
 
 double TreeMetricsCalculator::getPolymorpismFactor() const
@@ -296,14 +296,14 @@ TreeMetricsCalculator::analitics<int64_t, double> TreeMetricsCalculator::scanPol
 {
 	return move(scan(results->getClassNamesResult(classLists).namesList, 
 					results->getInheritanceAndPolymorphismFactorResult(classLists).overridenMethodOfEveryClass,
-					getMethodInheritanceHidingFactor()));
+					getMethodInheritanceFactor()));
 }
 
 TreeMetricsCalculator::analitics<int64_t, double> TreeMetricsCalculator::totalAnalyzisPolymorpismFactor() const
 {
 	return move(totalAnalyzis(results->getClassNamesResult(classLists).namesList, 
 							results->getInheritanceAndPolymorphismFactorResult(classLists).overridenMethodOfEveryClass,
-							getMethodInheritanceHidingFactor()));
+							getMethodInheritanceFactor()));
 }
 
 double TreeMetricsCalculator::getNumberOfChildrenMetric() const

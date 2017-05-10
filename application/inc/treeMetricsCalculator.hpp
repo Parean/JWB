@@ -35,14 +35,14 @@ public:
 	// totalAnalyzis returns all classes paired with value by the metric.
 
 	// Ratio of the number of inherited methods to total number of methods.
-	double getMethodInheritanceHidingFactor() const;
-	analitics<int64_t, double> scanMethodInheritanceHidingFactor() const;
-	analitics<int64_t, double> totalAnalyzisMethodInheritanceHidingFactor() const;
+	double getMethodInheritanceFactor() const;
+	analitics<int64_t, double> scanMethodInheritanceFactor() const;
+	analitics<int64_t, double> totalAnalyzisMethodInheritanceFactor() const;
 
 	// Ratio of the number of inherited attributes to total number of attributes.
-	double getAttributeInheritanceHidingFactor() const;
-	analitics<uint64_t, double> scanAttributeInheritanceHidingFactor() const;
-	analitics<uint64_t, double> totalAnalyzisAttributeInheritanceHidingFactor() const;
+	double getAttributeInheritanceFactor() const;
+	analitics<uint64_t, double> scanAttributeInheritanceFactor() const;
+	analitics<uint64_t, double> totalAnalyzisAttributeInheritanceFactor() const;
 
 	// Ratio of the number of overridden methods to total number of methods.
 	double getPolymorpismFactor() const;

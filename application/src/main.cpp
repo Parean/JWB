@@ -39,12 +39,15 @@ int main(int argc, const char* argv[])
 
 	// metricsCalculator.showCyclomaticComplexities();
 	// cout << endl << "Average cyclomatic complexity for all classes: " << metricsCalculator.getAverageCyclomaticComplexity() << endl;
-	
-	cout << "Method Inheritance Hiding Factor is " << treeMetricsCalculator.getMethodInheritanceHidingFactor() << endl;
-	cout << "Not satishfying number of classes is " << treeMetricsCalculator.scanMethodInheritanceHidingFactor().first.size() << endl;
 
-	cout << "Attribute Inheritance Hiding Factor is " << treeMetricsCalculator.getAttributeInheritanceHidingFactor() << endl;
-	cout << "Not satishfying number of classes is " << treeMetricsCalculator.scanAttributeInheritanceHidingFactor().first.size() << endl;
+	cout << "Total number of interfaces and classes if " << treeMetricsCalculator.totalAnalyzisWidthOfInheritanceTree().first.size() << endl;
+	cout << "Total number of classes if " << treeMetricsCalculator.totalAnalyzisMethodInheritanceFactor().first.size() << endl;
+	
+	cout << "Method Inheritance Hiding Factor is " << treeMetricsCalculator.getMethodInheritanceFactor() << endl;
+	cout << "Not satishfying number of classes is " << treeMetricsCalculator.scanMethodInheritanceFactor().first.size() << endl;
+
+	cout << "Attribute Inheritance Hiding Factor is " << treeMetricsCalculator.getAttributeInheritanceFactor() << endl;
+	cout << "Not satishfying number of classes is " << treeMetricsCalculator.scanAttributeInheritanceFactor().first.size() << endl;
 
 	cout << "Polymorpism Factor is " << treeMetricsCalculator.getPolymorpismFactor() << endl;
 	cout << "Not satishfying number of classes is " << treeMetricsCalculator.scanPolymorpismFactor().first.size() << endl;
@@ -59,10 +62,11 @@ int main(int argc, const char* argv[])
 	cout << "Width of Inheritance tree is " << treeMetricsCalculator.getWidthOfInheritanceTree() << endl;
 	cout << "Not satishfying number of classes is " << treeMetricsCalculator.scanWidthOfInheritanceTree().first.size() << endl;
 	cout << "Average width is " << treeMetricsCalculator.scanWidthOfInheritanceTree().second << endl;
-	
-	// for (auto const& x : p.first)
+
+	// for (auto const& x :  treeMetricsCalculator.totalAnalyzisMethodInheritanceFactor().first)
 	// {
 	// 	cout << "\t" << x.first << " " << x.second << endl;
 	// }
+	
 	// treeMetricsCalculator.printInheritanceTree();
 }
