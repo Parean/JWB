@@ -14,12 +14,12 @@ JWB currently supports only Linux/MacOs.
 * [Boost library](http://www.boost.org) (boost::optional and boost::filesystem; they should be added to 17th C++ standart).
 
 ## Installation guide
-Firstly, install Antlr4 into your system (your can remove it any time after installation)
+Firstly, install Antlr4 into your system (you can remove it any time after installation)
 ```
 $ cd /usr/local/lib
 $ curl -O http://www.antlr.org/download/antlr-4.6-complete.jar
 ```
-Then update your CLASSPATH and add some aliases.
+Then update your CLASSPATH and add some aliases (eigther to your .bash_profile if you tend to continue using antlr4 or simply run it in console).
 ```
 $ export CLASSPATH=".:/usr/local/lib/antlr-4.6-complete.jar:$CLASSPATH"
 $ alias antlr4='java -Xmx500M -cp "/usr/local/lib/antlr-4.6-complete.jar:$CLASSPATH" org.antlr.v4.Tool'
@@ -29,7 +29,7 @@ Now you shall be ready clone our repo
 ```
 git clone https://github.com/Parean/JWB.git
 ```
-Now we need to generate antlr4 runtime library and generate C++ parser
+Then build antlr4 runtime library and generate C++ parser
 ```
 $ cd antlr4-cpp-runtime-4.6-source
 $ mkdir build && mkdir run && cd build
@@ -53,3 +53,5 @@ To intall JWB simply run the following
 ./application/scripts/build.sh
 ```
 Now you shall be ready to go. Happy hacking.
+## How to use
+If you need to use JWB as binary then after build it should be located in applications/scripts/JWB.
