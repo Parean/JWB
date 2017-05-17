@@ -18,6 +18,7 @@ namespace JWB {	namespace details {
 InheritanceAndPolymorphismFactorVisitor::InheritanceAndPolymorphismFactorVisitor(unordered_set<Node const*>& filter, ReturnVisitorStatus<InheritanceAndPolymorphismFactorVisitor>& result) :
 	Visitor(filter),
 	inheritedMethodsRealSize(0),
+	numberOfEveryMethodThatWasFoundOnTheWay(0),
 	result(result)
 {}
 
@@ -37,12 +38,16 @@ void InheritanceAndPolymorphismFactorVisitor::visit(TreeClassDescription const* 
 	// Seems that Node garantes notemptyness of TreeClassDescription, but still.
 	assert(treeClassDescription);
 
-	/// Maximum number of possibly inherited methods. It is decremented when override found.
+	// Maximum number of possibly inherited methods. It is decremented when override found.
 	int64_t possibleInheritanceNumber = inheritedMethodsRealSize;
 
 	result.overridenMethodNumber += possibleInheritanceNumber;
 	result.overridenMethodOfEveryClass.push_back(possibleInheritanceNumber);
+	result.totalMethodNumberThatCouldBeInherited += numberOfEveryMethodThatWasFoundOnTheWay;
 	stackOfAddedGenericMethods.emplace_back();
+
+	// Counts every last one of the methods. If there is a method - it could be inherited.
+	numberOfEveryMethodThatWasFoundOnTheWay += treeClassDescription->getMethods().size();
 
 	for (auto const x : treeClassDescription->getMethods())
 	{
@@ -158,6 +163,7 @@ void InheritanceAndPolymorphismFactorVisitor::visitBack(TreeClassDescription con
 			inheritedMethodsRealSize--;
 		genericMethods.pop_back();
 	}
+	numberOfEveryMethodThatWasFoundOnTheWay -= treeClassDescription->getMethods().size();
 	stackOfAddedGenericMethods.pop_back();
 }
 

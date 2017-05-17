@@ -34,8 +34,12 @@ public:
 	// scanFactor/scanMetric - returns analitics of classes, that differ more than a half from mean value by the metric.
 	// totalAnalyzis returns all classes paired with value by the metric.
 
+
+	double getInheritanceAndPolymorpismDegree() const;
+
 	// Ratio of the number of inherited methods to total number of methods.
 	double getMethodInheritanceFactor() const;
+	double getMethodInheritanceDegree() const;
 	analitics<int64_t, double> scanMethodInheritanceFactor() const;
 	analitics<int64_t, double> totalAnalyzisMethodInheritanceFactor() const;
 
@@ -46,6 +50,7 @@ public:
 
 	// Ratio of the number of overridden methods to total number of methods.
 	double getPolymorpismFactor() const;
+	double getPolymorpismDegree() const;
 	analitics<int64_t, double> scanPolymorpismFactor() const;
 	analitics<int64_t, double> totalAnalyzisPolymorpismFactor() const;
 

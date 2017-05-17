@@ -13,7 +13,7 @@ class InheritanceAndPolymorphismFactorVisitor;
 template <>
 struct ReturnVisitorStatus<InheritanceAndPolymorphismFactorVisitor> 
 {
-	ReturnVisitorStatus() = default;
+	uint64_t totalMethodNumberThatCouldBeInherited = 0;
 	uint64_t totalMethodNumber = 0;
 	uint64_t inheritedMethodNumber = 0;
 	int64_t overridenMethodNumber = 0;
@@ -62,6 +62,9 @@ private:
 	std::vector<std::pair<TreeMethodDescription const*,bool>> genericMethods;
 	std::vector<size_t> stackOfAddedGenericMethods;
 	size_t inheritedMethodsRealSize;
+
+	// Includes both a method and a method that overrides first as two.
+	uint64_t numberOfEveryMethodThatWasFoundOnTheWay;
 	ReturnVisitorStatus<InheritanceAndPolymorphismFactorVisitor>& result;
 };
 

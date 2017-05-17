@@ -21,6 +21,10 @@ using std::accumulate;
 using std::abs;
 using std::remove_if;
 
+#include <iostream>
+using std::cout;
+using std::endl;
+
 namespace JWB {	namespace details {
 
 class ClassListsVisitor;
@@ -228,12 +232,20 @@ TreeMetricsCalculator::analitics<T, U> totalAnalyzis(
 	return move(result);
 }
 
+// Gets sum of values from given vector.
+template <typename T>
+T sumValue(vector<T> const& v)
+{
+	assert(!v.empty());
+	return accumulate(v.begin(), v.end(), 0);
+}
+
 // Gets mean value from given vector.
 template <typename T>
 double meanValue(vector<T> const& v)
 {
 	assert(!v.empty());
-	return (double)accumulate(v.begin(), v.end(), 0) / v.size();
+	return (double)sumValue(v) / v.size();
 }
 
 // If second argument is 0, return 0. Otherwise divides elements.
@@ -248,6 +260,13 @@ double TreeMetricsCalculator::getMethodInheritanceFactor() const
 	assert(results);
 	auto const& result = results->getInheritanceAndPolymorphismFactorResult(classLists);
 	return safeDivide(result.inheritedMethodNumber, result.totalMethodNumber);
+}
+
+double TreeMetricsCalculator::getMethodInheritanceDegree() const
+{
+	assert(results);
+	auto const& result = results->getInheritanceAndPolymorphismFactorResult(classLists);
+	return safeDivide(result.inheritedMethodNumber, result.totalMethodNumberThatCouldBeInherited);
 }
 
 TreeMetricsCalculator::analitics<int64_t, double> TreeMetricsCalculator::scanMethodInheritanceFactor() const
@@ -292,11 +311,25 @@ double TreeMetricsCalculator::getPolymorpismFactor() const
 	return safeDivide(result.overridenMethodNumber, result.totalMethodNumber);
 }
 
+double TreeMetricsCalculator::getPolymorpismDegree() const
+{
+	assert(results);
+	auto const& result = results->getInheritanceAndPolymorphismFactorResult(classLists);
+	return safeDivide(result.overridenMethodNumber, result.totalMethodNumberThatCouldBeInherited);
+}
+
+double TreeMetricsCalculator::getInheritanceAndPolymorpismDegree() const
+{
+	assert(results);
+	auto const& result = results->getInheritanceAndPolymorphismFactorResult(classLists);
+	return safeDivide(sumValue(result.overridenMethodOfEveryClass) + sumValue(result.inheritedMethodOfEveryClass), result.totalMethodNumberThatCouldBeInherited);
+}
+
 TreeMetricsCalculator::analitics<int64_t, double> TreeMetricsCalculator::scanPolymorpismFactor() const
 {
 	return move(scan(results->getClassNamesResult(classLists).namesList, 
 					results->getInheritanceAndPolymorphismFactorResult(classLists).overridenMethodOfEveryClass,
-					getMethodInheritanceFactor()));
+					meanValue(results->getInheritanceAndPolymorphismFactorResult(classLists).overridenMethodOfEveryClass)));
 }
 
 TreeMetricsCalculator::analitics<int64_t, double> TreeMetricsCalculator::totalAnalyzisPolymorpismFactor() const
