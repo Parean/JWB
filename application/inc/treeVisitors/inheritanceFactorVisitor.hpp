@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <utility>
 #include "visitor.hpp"
 #include "treeMethodDescription.hpp"
 
@@ -12,10 +13,13 @@ class InheritanceAndPolymorphismFactorVisitor;
 template <>
 struct ReturnVisitorStatus<InheritanceAndPolymorphismFactorVisitor> 
 {
-	ReturnVisitorStatus() = default;
+	uint64_t totalMethodNumberThatCouldBeInherited = 0;
 	uint64_t totalMethodNumber = 0;
 	uint64_t inheritedMethodNumber = 0;
 	int64_t overridenMethodNumber = 0;
+
+	std::vector<int64_t> inheritedMethodOfEveryClass;
+	std::vector<int64_t> overridenMethodOfEveryClass;
 };
 
 /// @class InheritanceAndPolymorphismFactorVisitor
@@ -55,7 +59,12 @@ private:
 	};
 
 	std::unordered_map<TreeMethodDescription const*, size_t, hash_for_TreeMethodDescription, equal_to_for_TreeMethodDescription> inheritedMethods;
+	std::vector<std::pair<TreeMethodDescription const*,bool>> genericMethods;
+	std::vector<size_t> stackOfAddedGenericMethods;
 	size_t inheritedMethodsRealSize;
+
+	// Includes both a method and a method that overrides first as two.
+	uint64_t numberOfEveryMethodThatWasFoundOnTheWay;
 	ReturnVisitorStatus<InheritanceAndPolymorphismFactorVisitor>& result;
 };
 

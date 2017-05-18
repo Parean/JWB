@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <cassert>
 
 #include "accessModifier.hpp"
 
@@ -16,8 +17,32 @@ public:
 	TreeMethodDescription(TreeMethodDescription&&) = delete;
 	TreeMethodDescription& operator=(TreeMethodDescription const&) = delete;
 	TreeMethodDescription& operator=(TreeMethodDescription&&) = delete;
-	TreeMethodDescription(std::string methodName, AccessModifier const accessModifier, std::string returnType);
-	TreeMethodDescription(AccessModifier const methodModifier, std::string methodName, std::string const &stringForHash);
+
+	template <bool isGenericCompileTime = false>
+	TreeMethodDescription(std::string methodName, AccessModifier const accessModifier, std::string returnType) :
+	name(move(methodName)),
+	returnType(move(returnType)),
+	accessModifier(accessModifier),
+	isGeneric(isGenericCompileTime),
+	lazyHash(0),
+	lazyHashUpdateNeed(true)
+{
+	assert(!this->name.empty());
+	assert(!this->returnType.empty());
+}
+
+	template <bool isGenericCompileTime = false>
+	TreeMethodDescription(AccessModifier const methodModifier, std::string methodName, std::string const &stringForHash) :
+	name(move(methodName)),
+	returnType("void"),
+	accessModifier(methodModifier),
+	isGeneric(isGenericCompileTime),
+	lazyHash(std::hash<std::string>()(stringForHash)),
+	lazyHashUpdateNeed(false)
+{
+	assert(!name.empty());
+	assert(!stringForHash.empty());
+}
 
 	/// Adds parameter type to paramTypes. Is used to construct method.
 	/// While params are added, TreeMethodDescription should be threated as invalid.
@@ -29,10 +54,12 @@ public:
 	std::string const& getReturnType() const;
 
 	/// Returns list of parameter types.
-	std::vector<std::string > const& getParamTypes() const;
+	std::vector<std::string> const& getParamTypes() const;
 
 	/// Returns access modifier of current method in interface/class container.
 	AccessModifier getAccessModifier() const;
+
+	bool getIsGeneric() const;
 
 	/// Updates hash, used to distinguish methods by their signatures.
 	void updateId();
@@ -44,11 +71,19 @@ public:
 private:
 	std::string const name;
 	std::string const returnType;
-	std::vector<std::string > paramTypes;
+	std::vector<std::string> paramTypes;
 	AccessModifier const accessModifier;
+
+	bool isGeneric = false;
 
 	size_t lazyHash;
 	bool lazyHashUpdateNeed;
 };
+
+namespace methodComparison
+{
+	bool compare(TreeMethodDescription const& firstMethod, TreeMethodDescription const& secondMethod);
+	bool isWider(TreeMethodDescription const& firstMethod, TreeMethodDescription const& secondMethod);
+}// end of namespace JWD::details::methodComparison
 
 }} // end of namespace JWB::details

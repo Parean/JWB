@@ -3,6 +3,7 @@ if(NOT UNIX)
  	message(FATAL "Unsupported operating system")
 endif()
 
+cmake_minimum_required(VERSION 3.5)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -53,9 +54,11 @@ set(JWB_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeVisitors/inheritanceFactorVisitor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeVisitors/attributeInheritanceFactorVisitor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeVisitors/numberOfChildrenVisitor.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/treeVisitors/classNamesVisitor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/node.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/inheritanceTree.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/currentlyBuildingTree.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/constructInheritanceTree.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/inheritanceTreeConstructorListener.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/graphSearchFunctions.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeMetricsCalculator.cpp

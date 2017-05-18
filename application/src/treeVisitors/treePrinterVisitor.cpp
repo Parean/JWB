@@ -12,12 +12,14 @@ TreePrinterVisitor::TreePrinterVisitor(unordered_set<Node const*>& filter, Retur
 	result(result)
 	{}
 
-void TreePrinterVisitor::visit(TreeClassDescription const* TreeClassDescription)
+void TreePrinterVisitor::visit(TreeClassDescription const* treeClassDescription)
 {
 	cout << "Class visited!" << endl;
-	cout << TreeClassDescription->getName() << " methods:" << endl;
-	for (auto const x : TreeClassDescription->getMethods())
+	cout << treeClassDescription->getName() << " methods:" << endl;
+	for (auto const x : treeClassDescription->getMethods())
 	{
+		if (x->getIsGeneric())
+			cout << "Generic ";
 		cout << x->getReturnType() << " " << x->getName() << " : ";
 		for (auto const y : x->getParamTypes())
 		{
@@ -25,15 +27,21 @@ void TreePrinterVisitor::visit(TreeClassDescription const* TreeClassDescription)
 		}
 		cout << endl;
 	}
+	for (auto const x : treeClassDescription->getAttributes())
+	{
+		cout << x->getType() << " " << x->getName() << endl;
+	}
 	cout << endl;
 }
 
-void TreePrinterVisitor::visit(TreeInterfaceDescription const* TreeInterfaceDescription)
+void TreePrinterVisitor::visit(TreeInterfaceDescription const* treeInterfaceDescription)
 {
 	cout << "Interface visited!" << endl;
-	cout << TreeInterfaceDescription->getName() << " methods:" << endl;
-	for (auto const x : TreeInterfaceDescription->getMethods())
+	cout << treeInterfaceDescription->getName() << " methods:" << endl;
+	for (auto const x : treeInterfaceDescription->getMethods())
 	{
+		if (x->getIsGeneric())
+			cout << "Generic ";
 		cout << x->getReturnType() << " " << x->getName() << " : ";
 		for (auto const y : x->getParamTypes())
 		{

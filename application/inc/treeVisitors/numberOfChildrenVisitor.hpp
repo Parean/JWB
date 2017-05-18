@@ -1,6 +1,7 @@
 #pragma once
 
 #include "visitor.hpp"
+#include <vector>
 
 namespace JWB {	namespace details {
 
@@ -13,6 +14,7 @@ struct ReturnVisitorStatus<NumberOfChildrenVisitor>
 {
 	uint64_t sumOfChildren = 0;
 	uint64_t numberOfInterfacesThatHaveChildren = 0;
+	std::vector<uint64_t> numberOfChildrenOfEveryClass; // dfs order.
 };
 
 /// @class NumberOfChildrenVisitor

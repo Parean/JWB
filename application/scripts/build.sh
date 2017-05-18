@@ -5,4 +5,4 @@ cmake ..
 mkdir temp
 cp ./CMakeFiles/JWB.dir/depend.make ./temp/depend.make
 make
-./JWB ../testExamples/
+./JWB ../testExamples/testInh

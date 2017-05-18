@@ -1,10 +1,6 @@
 #include "numberOfChildrenVisitor.hpp"
 #include "node.hpp"
 
-#include <iostream>
-using std::cout;
-using std::endl;
-
 namespace JWB { namespace details {
 
 NumberOfChildrenVisitor::NumberOfChildrenVisitor(std::unordered_set<Node const*>& filter, ReturnVisitorStatus<NumberOfChildrenVisitor>& returnStatus) :
@@ -14,11 +10,13 @@ NumberOfChildrenVisitor::NumberOfChildrenVisitor(std::unordered_set<Node const*>
 
 void NumberOfChildrenVisitor::updateResult()
 {
+	assert(node);
 	if (!node->getInheritors().empty())
 	{
 		returnStatus.sumOfChildren += node->getInheritors().size();
 		returnStatus.numberOfInterfacesThatHaveChildren++;
 	}
+	returnStatus.numberOfChildrenOfEveryClass.push_back(node->getInheritors().size());
 }
 
 void NumberOfChildrenVisitor::visit(TreeInterfaceDescription const* treeInterfaceDescription)
