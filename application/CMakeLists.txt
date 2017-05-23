@@ -33,6 +33,7 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/../boost/boost_1_64_0
 	${CMAKE_CURRENT_SOURCE_DIR}/inc
 	${CMAKE_CURRENT_SOURCE_DIR}/inc/treeDescriptions
+	${CMAKE_CURRENT_SOURCE_DIR}/inc/clusteringDescriptions
 	${CMAKE_CURRENT_SOURCE_DIR}/inc/treeVisitors
 	${CMAKE_CURRENT_SOURCE_DIR}/inc/treeStructure
 	)
@@ -40,27 +41,36 @@ include_directories(
 set(JWB_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/antlrComponentsKeeper.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/metricsCalculator.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/customListener.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/classDescription.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/interfaceDescription.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/methodDescription.cpp
+
+	${CMAKE_CURRENT_SOURCE_DIR}/src/simpleMetricsCalculator.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/simpleMetricsListener.cpp
+
+	${CMAKE_CURRENT_SOURCE_DIR}/src/clusteringMetricsCalculator.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/clusteringMetricsListener.cpp
+
+	${CMAKE_CURRENT_SOURCE_DIR}/src/clusteringDescriptions/clusteringClassDescription.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/clusteringDescriptions/clusteringInterfaceDescription.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/clusteringDescriptions/clusteringMethodDescription.cpp
+
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeDescriptions/treeMethodDescription.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeDescriptions/treeAttributeDescription.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeDescriptions/treeInterfaceDescription.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeDescriptions/treeClassDescription.cpp
+
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeVisitors/visitor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeVisitors/treePrinterVisitor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeVisitors/inheritanceFactorVisitor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeVisitors/attributeInheritanceFactorVisitor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeVisitors/numberOfChildrenVisitor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeVisitors/classNamesVisitor.cpp
+
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/node.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/inheritanceTree.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/currentlyBuildingTree.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/constructInheritanceTree.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/inheritanceTreeConstructorListener.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/graphSearchFunctions.cpp
+
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeMetricsCalculator.cpp
 	${JWB-GENERATED_SRC}
 	)
