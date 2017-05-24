@@ -32,7 +32,7 @@ clusteringMetricsCalculator.showClusteringMetrics();
 cout << endl << clusteringMetricsCalculator.cluster() << endl;
 
 // Inheritance
-/*	JWB::details::TreeMetricsCalculator treeMetricsCalculator(keeper);
+	JWB::details::TreeMetricsCalculator treeMetricsCalculator(keeper);
 
 	cout << "Polymorpism Factor after norming is " << treeMetricsCalculator.getInheritanceAndPolymorpismDegree() << endl;
 
@@ -40,7 +40,7 @@ cout << endl << clusteringMetricsCalculator.cluster() << endl;
 	cout << "Method Inheritance Degree is " << treeMetricsCalculator.getMethodInheritanceDegree() << endl;
 	// cout << "Not satishfying number of classes is " << treeMetricsCalculator.scanMethodInheritanceFactor().first.size() << endl;
 
-	// cout << "Attribute Inheritance Factor is " << treeMetricsCalculator.getAttributeInheritanceFactor() << endl;
+	cout << "Attribute Inheritance Factor is " << treeMetricsCalculator.getAttributeInheritanceFactor() << endl;
 	// cout << "Not satishfying number of classes is " << treeMetricsCalculator.scanAttributeInheritanceFactor().first.size() << endl;
 
 	cout << "Polymorpism Factor is " << treeMetricsCalculator.getPolymorpismFactor() << endl;
@@ -59,11 +59,12 @@ cout << endl << clusteringMetricsCalculator.cluster() << endl;
 	// cout << "Not satishfying number of classes is " << treeMetricsCalculator.scanWidthOfInheritanceTree().first.size() << endl;
 	cout << "Average width is " << treeMetricsCalculator.scanWidthOfInheritanceTree().second << endl;
 
+	treeMetricsCalculator.getAnalysisOnSimultaniousExtantionAndPolymorphism();
 	// for (auto const& x :  treeMetricsCalculator.totalAnalyzisMethodInheritanceFactor().first)
 	// {
 	// 	cout << "\t" << x.first << " " << x.second << endl;
 	// }
 
 	// treeMetricsCalculator.printInheritanceTree();
-*/
+
 }

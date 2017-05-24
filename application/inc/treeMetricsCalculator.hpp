@@ -73,6 +73,9 @@ public:
 	// Prints tree in dfs order.
 	void printInheritanceTree() const;
 
+	// Analyses inheritance tree for simoltanious override and extension and in case suggest division.
+	void getAnalysisOnSimultaniousExtantionAndPolymorphism() const;
+
 private:
 	InheritanceTree inheritanceTree;
 

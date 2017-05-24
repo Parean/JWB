@@ -63,7 +63,8 @@ set(JWB_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeVisitors/attributeInheritanceFactorVisitor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeVisitors/numberOfChildrenVisitor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeVisitors/classNamesVisitor.cpp
-
+	${CMAKE_CURRENT_SOURCE_DIR}/src/treeVisitors/analyzeSimultanInhAndPolyVisitor.cpp
+	
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/node.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/inheritanceTree.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/treeStructure/currentlyBuildingTree.cpp
