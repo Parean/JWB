@@ -1,12 +1,13 @@
 #include <iostream>
+#include <memory>
 
 #include "antlrComponentsKeeper.hpp"
-#include "metricsCalculator.hpp"
 #include "treeMetricsCalculator.hpp"
+#include "simpleMetricsCalculator.hpp"
+#include "clusteringMetricsCalculator.hpp"
 
 using std::cout;
 using std::endl;
-using std::vector;
 
 int main(int argc, const char* argv[])
 {
@@ -24,32 +25,22 @@ int main(int argc, const char* argv[])
 		return 0;
 	}
 
-	// JWB::details::MetricsCalculator metricsCalculator(keeper);
+// Clustering
+JWB::details::ClusteringMetricsCalculator clusteringMetricsCalculator(keeper);
+
+clusteringMetricsCalculator.showClusteringMetrics();
+cout << endl << clusteringMetricsCalculator.cluster() << endl;
+
+// Inheritance
 	JWB::details::TreeMetricsCalculator treeMetricsCalculator(keeper);
 
-	// metricsCalculator.showNumberOfMethods();
-	// metricsCalculator.showNumberOfFields();
-
-	// cout << "Method hiding factor: " << metricsCalculator.getMethodHidingFactor() << endl;
-	// cout << "Attribute hiding factor: " << metricsCalculator.getAttributeHidingFactor() << endl << endl;
-
-	// cout << "Number of comment lines: " << metricsCalculator.getNumberOfCommentLines() << endl;
-	// cout << "Source lines of code: " << metricsCalculator.getSourceLinesOfCode() << endl;
-	// cout << "Comment percentage: " << metricsCalculator.getCommentPercentage() << endl << endl;
-
-	// metricsCalculator.showCyclomaticComplexities();
-	// cout << endl << "Average cyclomatic complexity for all classes: " << metricsCalculator.getAverageCyclomaticComplexity() << endl;
-
-	// cout << "Total number of interfaces and classes if " << treeMetricsCalculator.totalAnalyzisWidthOfInheritanceTree().first.size() << endl;
-	// cout << "Total number of classes if " << treeMetricsCalculator.totalAnalyzisMethodInheritanceFactor().first.size() << endl;
-	
 	cout << "Polymorpism Factor after norming is " << treeMetricsCalculator.getInheritanceAndPolymorpismDegree() << endl;
-	
+
 	cout << "Method Inheritance Factor is " << treeMetricsCalculator.getMethodInheritanceFactor() << endl;
 	cout << "Method Inheritance Degree is " << treeMetricsCalculator.getMethodInheritanceDegree() << endl;
 	// cout << "Not satishfying number of classes is " << treeMetricsCalculator.scanMethodInheritanceFactor().first.size() << endl;
 
-	// cout << "Attribute Inheritance Factor is " << treeMetricsCalculator.getAttributeInheritanceFactor() << endl;
+	cout << "Attribute Inheritance Factor is " << treeMetricsCalculator.getAttributeInheritanceFactor() << endl;
 	// cout << "Not satishfying number of classes is " << treeMetricsCalculator.scanAttributeInheritanceFactor().first.size() << endl;
 
 	cout << "Polymorpism Factor is " << treeMetricsCalculator.getPolymorpismFactor() << endl;
@@ -73,6 +64,7 @@ int main(int argc, const char* argv[])
 	// {
 	// 	cout << "\t" << x.first << " " << x.second << endl;
 	// }
-	
+
 	// treeMetricsCalculator.printInheritanceTree();
+
 }

@@ -1,7 +1,8 @@
 #include <iostream>
+#include <typeinfo>
 
 #include "accessModifier.hpp"
-#include "customListener.hpp"
+#include "simpleMetricsListener.hpp"
 
 using std::vector;
 using std::string;
@@ -9,54 +10,60 @@ using std::shared_ptr;
 
 namespace JWB {	namespace details {
 
-CustomListener::CustomListener(MetricsCalculator *calculator):
-	metricsCalculator(calculator)
+SimpleMetricsListener::SimpleMetricsListener(SimpleMetricsCalculator *calculator):
+	simpleMetricsCalculator(calculator)
 {
 	assert(calculator);
 }
 
-void CustomListener::enterClassDeclaration(JavaParser::ClassDeclarationContext *ctx)
+void SimpleMetricsListener::enterClassDeclaration(JavaParser::ClassDeclarationContext *ctx)
 {
-	classesForTraversal.emplace_back(new ClassDescription(ctx->Identifier()->getText()));
-	metricsCalculator->bumpNumberSourceLinesOfCode();
+	string className = "";
+	if (ctx->typeParameters())
+		className = ctx->Identifier()->getText() + ctx->typeParameters()->getText();
+	else
+		className = ctx->Identifier()->getText();
+
+	classesForTraversal.emplace_back(new ClusteringClassDescription(className));
+	simpleMetricsCalculator->bumpNumberSourceLinesOfCode();
 }
 
-void CustomListener::enterInterfaceDeclaration(JavaParser::InterfaceDeclarationContext *ctx)
+void SimpleMetricsListener::enterInterfaceDeclaration(JavaParser::InterfaceDeclarationContext *ctx)
 {
-	interfacesForTraversal.emplace_back(new InterfaceDescription(ctx->Identifier()->getText()));
-	metricsCalculator->bumpNumberSourceLinesOfCode();
+	interfacesForTraversal.emplace_back(new ClusteringInterfaceDescription(ctx->Identifier()->getText()));
+	simpleMetricsCalculator->bumpNumberSourceLinesOfCode();
 }
 
-void CustomListener::enterEnumDeclaration(JavaParser::EnumDeclarationContext *ctx)
+void SimpleMetricsListener::enterEnumDeclaration(JavaParser::EnumDeclarationContext *ctx)
 {
-	classesForTraversal.emplace_back(new ClassDescription(ctx->Identifier()->getText()));
-	metricsCalculator->bumpNumberSourceLinesOfCode();
+	classesForTraversal.emplace_back(new ClusteringClassDescription(ctx->Identifier()->getText()));
+	simpleMetricsCalculator->bumpNumberSourceLinesOfCode();
 }
 
-void CustomListener::exitClassDeclaration(JavaParser::ClassDeclarationContext *ctx)
+void SimpleMetricsListener::exitClassDeclaration(JavaParser::ClassDeclarationContext *ctx)
 {
 	assert(!classesForTraversal.empty());
-	metricsCalculator->addClass(classesForTraversal.back());
+	simpleMetricsCalculator->addClass(classesForTraversal.back());
 	classesForTraversal.pop_back();
 }
 
-void CustomListener::exitInterfaceDeclaration(JavaParser::InterfaceDeclarationContext *ctx)
+void SimpleMetricsListener::exitInterfaceDeclaration(JavaParser::InterfaceDeclarationContext *ctx)
 {
 	assert(!interfacesForTraversal.empty());
-	metricsCalculator->addInterface(interfacesForTraversal.back());
+	simpleMetricsCalculator->addInterface(interfacesForTraversal.back());
 	interfacesForTraversal.pop_back();
 }
 
-void CustomListener::exitEnumDeclaration(JavaParser::EnumDeclarationContext *ctx)
+void SimpleMetricsListener::exitEnumDeclaration(JavaParser::EnumDeclarationContext *ctx)
 {
 	assert(!classesForTraversal.empty());
-	metricsCalculator->addClass(classesForTraversal.back());
+	simpleMetricsCalculator->addClass(classesForTraversal.back());
 	classesForTraversal.pop_back();
 }
 
-void CustomListener::enterStatement(JavaParser::StatementContext *ctx)
+void SimpleMetricsListener::enterStatement(JavaParser::StatementContext *ctx)
 {
-	if (methodsForTraversal.empty())
+	if (methodsForTraversal.empty());
 		return;
 
 	if (!ctx->getTokens(JavaParser::IF).empty() || !ctx->getTokens(JavaParser::FOR).empty() || !ctx->getTokens(JavaParser::WHILE).empty() ||
@@ -79,10 +86,10 @@ void CustomListener::enterStatement(JavaParser::StatementContext *ctx)
 	if (ctx->block())
 		return;
 
-	metricsCalculator->bumpNumberSourceLinesOfCode();
+	simpleMetricsCalculator->bumpNumberSourceLinesOfCode();
 }
 
-void CustomListener::enterExpression(JavaParser::ExpressionContext *ctx)
+void SimpleMetricsListener::enterExpression(JavaParser::ExpressionContext *ctx)
 {
 	if (!ctx->getTokens(JavaParser::QUESTION).empty())
 	{
@@ -91,21 +98,21 @@ void CustomListener::enterExpression(JavaParser::ExpressionContext *ctx)
 	}
 }
 
-void CustomListener::exitMethodDeclaration(JavaParser::MethodDeclarationContext *ctx)
+void SimpleMetricsListener::exitMethodDeclaration(JavaParser::MethodDeclarationContext *ctx)
 {
 	assert(!methodsForTraversal.empty());
 	classesForTraversal.back()->addMethod(methodsForTraversal.back());
 	methodsForTraversal.pop_back();
 }
 
-void CustomListener::exitConstructorDeclaration(JavaParser::ConstructorDeclarationContext *ctx)
+void SimpleMetricsListener::exitConstructorDeclaration(JavaParser::ConstructorDeclarationContext *ctx)
 {
 	assert(!methodsForTraversal.empty());
 	classesForTraversal.back()->addMethod(methodsForTraversal.back());
 	methodsForTraversal.pop_back();
 }
 
-void CustomListener::enterClassBodyDeclaration(JavaParser::ClassBodyDeclarationContext *ctx)
+void SimpleMetricsListener::enterClassBodyDeclaration(JavaParser::ClassBodyDeclarationContext *ctx)
 {
 	assert(!classesForTraversal.empty());
 
@@ -118,7 +125,7 @@ void CustomListener::enterClassBodyDeclaration(JavaParser::ClassBodyDeclarationC
 	if (!(memberDeclaration->classDeclaration() || memberDeclaration->interfaceDeclaration() ||
 		  memberDeclaration->annotationTypeDeclaration() || memberDeclaration->enumDeclaration()))
 		{
-			metricsCalculator->bumpNumberSourceLinesOfCode();
+			simpleMetricsCalculator->bumpNumberSourceLinesOfCode();
 		}
 
 	auto const modifier = getAccessModifier(ctx->modifier(), true);
@@ -158,11 +165,11 @@ void CustomListener::enterClassBodyDeclaration(JavaParser::ClassBodyDeclarationC
 
 	if (!name.empty())
 	{
-		methodsForTraversal.emplace_back(new MethodDescription(modifier, name, name + parameters));
+		methodsForTraversal.emplace_back(new ClusteringMethodDescription(modifier, name, name + parameters));
 	}
 }
 
-void CustomListener::enterInterfaceBodyDeclaration(JavaParser::InterfaceBodyDeclarationContext *ctx)
+void SimpleMetricsListener::enterInterfaceBodyDeclaration(JavaParser::InterfaceBodyDeclarationContext *ctx)
 {
 	assert(!interfacesForTraversal.empty());
 
@@ -175,7 +182,7 @@ void CustomListener::enterInterfaceBodyDeclaration(JavaParser::InterfaceBodyDecl
 	if (!(interfaceMemberDeclaration->interfaceDeclaration() || interfaceMemberDeclaration->interfaceDeclaration() ||
 		  interfaceMemberDeclaration->annotationTypeDeclaration() || interfaceMemberDeclaration->enumDeclaration()))
 	{
-		metricsCalculator->bumpNumberSourceLinesOfCode();
+		simpleMetricsCalculator->bumpNumberSourceLinesOfCode();
 	}
 
 	auto const modifier = getAccessModifier(ctx->modifier(), false);
@@ -196,39 +203,39 @@ void CustomListener::enterInterfaceBodyDeclaration(JavaParser::InterfaceBodyDecl
 
 	if (!name.empty())
 	{
-		std::shared_ptr<MethodDescription> methodPtr(new MethodDescription(modifier, name, name + parameters));
+		std::shared_ptr<ClusteringMethodDescription> methodPtr(new ClusteringMethodDescription(modifier, name, name + parameters));
 		interfacesForTraversal.back()->addMethod(methodPtr);
 	}
 }
 
-void CustomListener::enterCompilationUnit(JavaParser::CompilationUnitContext *ctx)
+void SimpleMetricsListener::enterCompilationUnit(JavaParser::CompilationUnitContext *ctx)
 {
-	metricsCalculator->bumpNumberSourceLinesOfCode(ctx->importDeclaration().size());
+	simpleMetricsCalculator->bumpNumberSourceLinesOfCode(ctx->importDeclaration().size());
 	if (ctx->packageDeclaration())
-		metricsCalculator->bumpNumberSourceLinesOfCode();
+		simpleMetricsCalculator->bumpNumberSourceLinesOfCode();
 }
 
-void CustomListener::enterLocalVariableDeclarationStatement(JavaParser::LocalVariableDeclarationStatementContext *ctx)
+void SimpleMetricsListener::enterLocalVariableDeclarationStatement(JavaParser::LocalVariableDeclarationStatementContext *ctx)
 {
-	metricsCalculator->bumpNumberSourceLinesOfCode();
+	simpleMetricsCalculator->bumpNumberSourceLinesOfCode();
 }
 
-void CustomListener::enterAnnotationName(JavaParser::AnnotationNameContext *ctx)
+void SimpleMetricsListener::enterAnnotationName(JavaParser::AnnotationNameContext *ctx)
 {
-	metricsCalculator->bumpNumberSourceLinesOfCode();
+	simpleMetricsCalculator->bumpNumberSourceLinesOfCode();
 }
 
-void CustomListener::enterAnnotationMethodOrConstantRest(JavaParser::AnnotationMethodOrConstantRestContext *ctx)
+void SimpleMetricsListener::enterAnnotationMethodOrConstantRest(JavaParser::AnnotationMethodOrConstantRestContext *ctx)
 {
-	metricsCalculator->bumpNumberSourceLinesOfCode();
+	simpleMetricsCalculator->bumpNumberSourceLinesOfCode();
 }
 
-void CustomListener::enterAnnotationTypeDeclaration(JavaParser::AnnotationTypeDeclarationContext *ctx)
+void SimpleMetricsListener::enterAnnotationTypeDeclaration(JavaParser::AnnotationTypeDeclarationContext *ctx)
 {
-	metricsCalculator->bumpNumberSourceLinesOfCode();
+	simpleMetricsCalculator->bumpNumberSourceLinesOfCode();
 }
 
-AccessModifier CustomListener::getAccessModifier(vector<JavaParser::ModifierContext *> modifiers, bool isClass) const
+AccessModifier SimpleMetricsListener::getAccessModifier(vector<JavaParser::ModifierContext *> modifiers, bool isClass) const
 {
 	for (auto const& m : modifiers)
 	{
@@ -250,4 +257,25 @@ AccessModifier CustomListener::getAccessModifier(vector<JavaParser::ModifierCont
 		return AccessModifier::PUBLIC;
 }
 
+void SimpleMetricsListener::enterFormalParameters(JavaParser::FormalParametersContext *ctx)
+{
+	if (!ctx->formalParameterList() || typeid(JavaParser::InterfaceMethodDeclarationContext) == typeid(*ctx->parent))
+		return;
+
+	assert(!methodsForTraversal.empty());
+	for (auto c : ctx->formalParameterList()->formalParameter())
+	{
+		methodsForTraversal.back()->addParameter(c->getText());
+		methodsForTraversal.back()->addUsedLocalVariable(c->variableDeclaratorId()->getText());
+	}
+}
+
+void SimpleMetricsListener::enterLocalVariableDeclaration(JavaParser::LocalVariableDeclarationContext *ctx)
+{
+	if(methodsForTraversal.empty());
+		return;
+
+	for (auto const& c : ctx->variableDeclarators()->variableDeclarator())
+		methodsForTraversal.back()->addUsedLocalVariable(c->variableDeclaratorId()->getText());
+}
 }}

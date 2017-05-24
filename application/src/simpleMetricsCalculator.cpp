@@ -1,18 +1,20 @@
+#include <algorithm>
 #include <iostream>
 #include <cassert>
+#include <memory>
 
-#include "metricsCalculator.hpp"
-#include "customListener.hpp"
+#include "simpleMetricsCalculator.hpp"
+#include "simpleMetricsListener.hpp"
 
-using std::vector;
 using std::cout;
 using std::endl;
 using std::shared_ptr;
+using std::swap;
 using namespace antlr4;
 
 namespace JWB {	namespace details {
 
-MetricsCalculator::	MetricsCalculator(AntlrComponentsKeeper &keeper)
+SimpleMetricsCalculator::SimpleMetricsCalculator(AntlrComponentsKeeper &keeper)
 {
 	tokens = keeper.getTokens();
 	auto trees = keeper.getTrees();
@@ -22,35 +24,45 @@ MetricsCalculator::	MetricsCalculator(AntlrComponentsKeeper &keeper)
 
 	for (auto const& t : trees)
 	{
-		CustomListener listener(this);
-		tree::ParseTreeWalker::DEFAULT.walk(&listener, t);
+		SimpleMetricsListener simpleMetricsListener(this);
+		tree::ParseTreeWalker::DEFAULT.walk(&simpleMetricsListener, t);
 	}
 }
 
-void MetricsCalculator::bumpNumberSourceLinesOfCode()
+void SimpleMetricsCalculator::bumpNumberSourceLinesOfCode()
 {
 	numberSourceLinesOfCode++;
 }
 
-void MetricsCalculator::bumpNumberSourceLinesOfCode(size_t number)
+std::list <std::shared_ptr <ClusteringClassDescription> > const& SimpleMetricsCalculator::getClasses() const
+{
+	return classes;
+}
+
+void SimpleMetricsCalculator::setClasses(std::list <std::shared_ptr <ClusteringClassDescription> > newClasses)
+{
+	swap(newClasses, classes);
+}
+
+void SimpleMetricsCalculator::bumpNumberSourceLinesOfCode(size_t number)
 {
 	numberSourceLinesOfCode += number;
 }
 
-void MetricsCalculator::addClass(shared_ptr <const ClassDescription> const &classPtr)
+void SimpleMetricsCalculator::addClass(shared_ptr <ClusteringClassDescription> const &classPtr)
 {
 	assert(classPtr.get());
-	classes.push_back(classPtr);
+	classes.push_front(classPtr);
 }
 
-void MetricsCalculator::addInterface(shared_ptr <const InterfaceDescription> const &interfacePtr)
+void SimpleMetricsCalculator::addInterface(shared_ptr <ClusteringInterfaceDescription> const &interfacePtr)
 {
 	assert(interfacePtr.get());
 	interfaces.push_back(interfacePtr);
 }
 
 
-size_t MetricsCalculator::getNumberOfCommentLines() const
+size_t SimpleMetricsCalculator::getNumberOfCommentLines() const
 {
 	size_t numberOfCommentLines = 0;
 
@@ -84,7 +96,7 @@ size_t MetricsCalculator::getNumberOfCommentLines() const
 	return numberOfCommentLines;
 }
 
-void MetricsCalculator::showNumberOfMethods() const
+void SimpleMetricsCalculator::showNumberOfMethods() const
 {
 	for (auto const& c : classes)
 	{
@@ -98,7 +110,7 @@ void MetricsCalculator::showNumberOfMethods() const
 	}
 }
 
-void MetricsCalculator::showNumberOfFields() const
+void SimpleMetricsCalculator::showNumberOfFields() const
 {
 	for (auto const& c : classes)
 	{
@@ -107,7 +119,7 @@ void MetricsCalculator::showNumberOfFields() const
 	}
 }
 
-double MetricsCalculator::getMethodHidingFactor() const
+double SimpleMetricsCalculator::getMethodHidingFactor() const
 {
 	size_t numOfMethods = 0;
 	size_t numOfPrivateMethods = 0;
@@ -130,7 +142,7 @@ double MetricsCalculator::getMethodHidingFactor() const
 	return (double)numOfPrivateMethods / numOfMethods;
 }
 
-double MetricsCalculator::getAttributeHidingFactor() const
+double SimpleMetricsCalculator::getAttributeHidingFactor() const
 {
 	size_t numOfAttributes = 0;
 	size_t numOfPrivateAttributes = 0;
@@ -147,17 +159,17 @@ double MetricsCalculator::getAttributeHidingFactor() const
 	return (double)numOfPrivateAttributes / numOfAttributes;
 }
 
-size_t MetricsCalculator::getSourceLinesOfCode() const
+size_t SimpleMetricsCalculator::getSourceLinesOfCode() const
 {
 	return numberSourceLinesOfCode;
 }
 
-double MetricsCalculator::getCommentPercentage() const
+double SimpleMetricsCalculator::getCommentPercentage() const
 {
 	return (double)getNumberOfCommentLines() / getSourceLinesOfCode();
 }
 
-void MetricsCalculator::showCyclomaticComplexities() const
+void SimpleMetricsCalculator::showCyclomaticComplexities() const
 {
 	cout << endl << "Cyclomatic complexities:" << endl;
 	for (auto const& c : classes)
@@ -167,14 +179,14 @@ void MetricsCalculator::showCyclomaticComplexities() const
 
 		for (auto m : methods)
 		{
-			cout << m->getName() << " — " << m->getIndependentPaths() << endl;
+			cout << m.second->getName() << " — " << m.second->getIndependentPaths() << endl;
 		}
 
 		cout << "Average cyclomatic complexity — " << c->getAverageCyclomaticComplexity() << endl;
 	}
 }
 
-size_t MetricsCalculator::getAverageCyclomaticComplexity() const
+size_t SimpleMetricsCalculator::getAverageCyclomaticComplexity() const
 {
 	int sumOfCyclomaticComplexities = 0;
 

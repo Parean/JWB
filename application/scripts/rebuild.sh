@@ -6,4 +6,4 @@ rm ./CMakeFiles/JWB.dir/*.o
 cp ./temp/depend.make ./CMakeFiles/JWB.dir/
 rm JWB
 make
-time ./JWB /Users/bzik/Documents/antlr4
+./JWB ../testExamples/clusteringExample.java

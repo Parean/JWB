@@ -4,25 +4,25 @@
 #include <memory>
 
 #include "JavaBaseListener.h"
-#include "metricsCalculator.hpp"
-#include "classDescription.hpp"
-#include "interfaceDescription.hpp"
-#include "methodDescription.hpp"
+#include "simpleMetricsCalculator.hpp"
+#include "clusteringClassDescription.hpp"
+#include "clusteringInterfaceDescription.hpp"
+#include "clusteringMethodDescription.hpp"
 
 namespace JWB {	namespace details {
 
-/// @class CustomListener
-/// @brief This listener is used to calculate Method Hiding Factor, Attribute Hiding Factor, Comment Percentage and Source Lines of Code
-class CustomListener : public JavaBaseListener
+/// @class SimpleMetricsListener
+/// @brief This listener is used to calculate some base metrics
+class SimpleMetricsListener : public JavaBaseListener
 {
 	public:
-		CustomListener() = delete;
-		CustomListener(CustomListener const&) = delete;
-		CustomListener(CustomListener&&) = delete;
-		CustomListener& operator=(CustomListener const&) = delete;
-		CustomListener& operator=(CustomListener&&) = delete;
+		SimpleMetricsListener() = delete;
+		SimpleMetricsListener(SimpleMetricsListener const&) = delete;
+		SimpleMetricsListener(SimpleMetricsListener&&) = delete;
+		SimpleMetricsListener& operator=(SimpleMetricsListener const&) = delete;
+		SimpleMetricsListener& operator=(SimpleMetricsListener&&) = delete;
 
-		CustomListener(MetricsCalculator *calculator);
+		SimpleMetricsListener(SimpleMetricsCalculator *calculator);
 
 	private:
 		// In these methods we add class or interface to vector, so in program we always can get access to current class or interface
@@ -31,11 +31,11 @@ class CustomListener : public JavaBaseListener
 		void enterInterfaceDeclaration(JavaParser::InterfaceDeclarationContext *ctx) override;
 		void enterEnumDeclaration(JavaParser::EnumDeclarationContext *ctx) override;
 
-		// In these methods we add class or interface to the metricsCalculator
+		// In these methods we add class or interface to the simpleMetricsCalculator
 		// Then, we remove it from vector to support the ability to access the current class or interface
 		void exitClassDeclaration(JavaParser::ClassDeclarationContext *ctx) override;
 		void exitInterfaceDeclaration(JavaParser::InterfaceDeclarationContext *ctx) override;
-		void exitEnumDeclaration(JavaParser::EnumDeclarationContext *ctx) override;
+		void exitEnumDeclaration(JavaParser::EnumDeclarationContext *ctx);
 
 		// In this two methods we increase independetPaths in current method if it's necessary
 		// Also enterStatement is used to increment numberSourceLinesOfCode
@@ -67,16 +67,22 @@ class CustomListener : public JavaBaseListener
 		void enterAnnotationMethodOrConstantRest(JavaParser::AnnotationMethodOrConstantRestContext *ctx) override;
 		void enterCompilationUnit(JavaParser::CompilationUnitContext *ctx) override;
 
-		// MetricsCalculator is passed to the listener and stores all the data it needs during the tree traversal,
+		// It used to add formal parameters and local variables to current method
+		void enterFormalParameters(JavaParser::FormalParametersContext *ctx) override;
+
+		// It used to add local variables to current method
+		void enterLocalVariableDeclaration(JavaParser::LocalVariableDeclarationContext *ctx) override;
+
+		// SimpleMetricsCalculator is passed to the listener and stores all the data it needs during the tree traversal,
 		// then it's used by the client code to calculate various metrics
-		MetricsCalculator *metricsCalculator;
+		SimpleMetricsCalculator *simpleMetricsCalculator;
 
 		// Used to access the current class or interface during the tree traversal
-		std::vector <std::shared_ptr <ClassDescription> > classesForTraversal;
-		std::vector <std::shared_ptr <InterfaceDescription> > interfacesForTraversal;
+		std::vector <std::shared_ptr <ClusteringClassDescription> > classesForTraversal;
+		std::vector <std::shared_ptr <ClusteringInterfaceDescription> > interfacesForTraversal;
 
 		// Only class methods are added here
-		std::vector <std::shared_ptr <MethodDescription> > methodsForTraversal;
+		std::vector <std::shared_ptr <ClusteringMethodDescription> > methodsForTraversal;
 };
 
 }}
