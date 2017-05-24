@@ -36,7 +36,7 @@ public:
 	/// Takes filter that will contain visited nodes.
 	InheritanceAndPolymorphismFactorVisitor(std::unordered_set<Node const*>& filter, ReturnVisitorStatus<InheritanceAndPolymorphismFactorVisitor>& result);
 
-	/// Visit father of a class inheritance line. (If there is a class parent, InheritanceAndPolymorphismFactorVisitor may work incorrectly).
+	/// Adds info about visited class, its methods and which methods of parents it inherites and overrides.
 	void visit(TreeClassDescription const* TreeClassDescription) override;
 
 	/// Does nothing.

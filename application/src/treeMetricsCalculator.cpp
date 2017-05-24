@@ -6,6 +6,7 @@
 #include "numberOfChildrenVisitor.hpp"
 #include "attributeInheritanceFactorVisitor.hpp"
 #include "classNamesVisitor.hpp"
+#include "analyzeSimultanInhAndPolyVisitor.hpp"
 
 #include <exception>
 #include <boost/optional.hpp>
@@ -149,6 +150,11 @@ public:
 		if (!widthResult)
 			widthResult = move(inheritanceTree.lambdaDfs(graphSearchFunctions::widthCounter()));
 		return widthResult.value();
+	}
+
+	auto getEnergyAnalyzeSimExtandAndPolyResult(vector<Node const*> const& classLists) const
+	{
+		return move(countMetric<AnalyzeSimultanInhAndPolyVisitor>(classLists).value());
 	}
 
 	
@@ -409,5 +415,13 @@ void TreeMetricsCalculator::printInheritanceTree() const
 {
 	inheritanceTree.dfsDown<TreePrinterVisitor>();
 }
+
+void TreeMetricsCalculator::getAnalysisOnSimultaniousExtantionAndPolymorphism() const
+{
+	cout << "Scanning inheritance tree for simultanious overrides and extends." << endl << endl;
+	results->getEnergyAnalyzeSimExtandAndPolyResult(classLists);
+}
+
+
 
 }} // end of namespace JWB::details

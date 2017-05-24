@@ -68,6 +68,7 @@ int main(int argc, const char* argv[])
 	// cout << "Not satishfying number of classes is " << treeMetricsCalculator.scanWidthOfInheritanceTree().first.size() << endl;
 	cout << "Average width is " << treeMetricsCalculator.scanWidthOfInheritanceTree().second << endl;
 
+	treeMetricsCalculator.getAnalysisOnSimultaniousExtantionAndPolymorphism();
 	// for (auto const& x :  treeMetricsCalculator.totalAnalyzisMethodInheritanceFactor().first)
 	// {
 	// 	cout << "\t" << x.first << " " << x.second << endl;
